@@ -1,0 +1,21 @@
+This license governs the use of the accompanying software. By default, using the software means you agree to this license. Please do not use the software if you do not accept the license.
+1. Meanings
+Under U.S. copyright law the terms “reproduce”, “reproduction”, and “distribution” have the same purpose.
+“You” means the software licensee.
+“Your Company” means at the time of downloading the software the company you worked for.
+“Reference use” means the software can be used as a reference within your company, read-only form, for the particular cause of product debugging, product preservation, or amplifying the interoperability of your products with the software, and notably prohibits the right to share the software outside of your company.
+“Licensed patents” means the patent owner (the licensor) can share and also grant licensees the right to distribute which can be seen directly on the software as distributed under this license by the Licensor.
+
+2. Grant of Rights
+(A)   Grant of Copyright - To reproduce the software for reference use, the licensor grants you a non-transferable, inclusive, global, royalty-free copyright license but by adhering to the terms of this license.
+(B)   Grant of Patent - Under licensed patents for reference use, the licensor grants you a non-transferable, inclusive, global, royalty-free patent license but by adhering to the terms of this license.
+ 
+3. Restriction
+(A)   No Trademark License - You cannot use the Licensor’s name, logo, or trademarks because this license does not grant you that.
+(B)   our license to the software gets terminated automatically should you file patent litigation against the Licensor over rights that you think may apply to the software.
+(C)   “As-is” is the way the software is licensed. You carry the danger of using it. No express warranties, guarantees or conditions are given by the Licensor. Your local laws may provide additional consumer rights which this license cannot alter. The Licensor prohibits the implied warranties of merchantability, suitability for a specific task and non-infringement.
+(D)   The code in the software can be accessed for read-only form and cannot be used in any other product or service.
+ 
+
+
+

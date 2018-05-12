@@ -6,13 +6,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ragnar;
 
-namespace WebTorrentX
+namespace WebTorrentX.Models
 {
     internal sealed class Torrent : INotifyPropertyChanged, IDisposable
     {
         private bool active;
         private Session session;
         private TorrentHandle handle;
+
+        private const string fastResumeDir = ".resume";
+        private const string torrentDir = ".torrents";
 
         private string name = string.Empty;
         public string Name
@@ -133,6 +136,14 @@ namespace WebTorrentX
             }
         }
 
+        public SHA1Hash InfoHash
+        {
+            get
+            {
+                return handle.InfoHash;
+            }
+        }
+
         private Torrent(AddTorrentParams addParams, Session session)
         {
             LoadTorrentState(ref addParams);
@@ -151,11 +162,6 @@ namespace WebTorrentX
             {
                 while (torrent.active)
                 {
-                    var status = torrent.handle.QueryStatus();
-                    if (status.IsSeeding)
-                    {
-                        //break;
-                    }
                     torrent.UpdateProperties();
                     Thread.Sleep(1000);
                 }
@@ -165,6 +171,7 @@ namespace WebTorrentX
 
         public void UpdateProperties()
         {
+            GetHashCode();
             OnPropertyChanged(nameof(Speed));
             OnPropertyChanged(nameof(TimeRemaining));
             OnPropertyChanged(nameof(Peers));
@@ -174,11 +181,13 @@ namespace WebTorrentX
             OnPropertyChanged(nameof(Progress));
         }
 
-        private static void LoadTorrentState(ref AddTorrentParams p)
+        private void LoadTorrentState(ref AddTorrentParams p)
         {
-            if (File.Exists(Path.Combine(".resume", p.TorrentInfo.Name + ".fastresume")))
+            if (p.TorrentInfo == null) return;
+            string file = Path.Combine(fastResumeDir, p.TorrentInfo.Name + ".fastresume");
+            if (File.Exists(file))
             {
-                p.ResumeData = File.ReadAllBytes(Path.Combine(".resume", p.TorrentInfo.Name + ".fastresume"));
+                p.ResumeData = File.ReadAllBytes(file);
             }
         }
 
@@ -197,10 +206,10 @@ namespace WebTorrentX
                         if (alert is SaveResumeDataAlert)
                         {
                             var saveResumeAlert = (SaveResumeDataAlert)alert;
-                            if (!Directory.Exists(".resume")) Directory.CreateDirectory(".resume");
+                            if (!Directory.Exists(fastResumeDir)) Directory.CreateDirectory(fastResumeDir);
                             var status = saveResumeAlert.Handle.QueryStatus();
                             File.WriteAllBytes(
-                                Path.Combine(".resume", status.Name + ".fastresume"),
+                                Path.Combine(fastResumeDir, status.Name + ".fastresume"),
                                 saveResumeAlert.ResumeData);
                             savedFastResume = true;
                             break;
@@ -219,6 +228,14 @@ namespace WebTorrentX
         public void Dispose()
         {
             active = false;
+            SaveTorrentState();
+        }
+
+        public void Remove()
+        {
+            active = false;
+            File.Delete(Path.Combine(torrentDir, handle.TorrentFile.Name + ".torrent"));
+            File.Delete(Path.Combine(fastResumeDir, handle.TorrentFile.Name + ".fastresume"));
         }
     }
 }

@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebTorrentX"
         xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
+        xmlns:converters="clr-namespace:WebTorrentX.Converters"
         mc:Ignorable="d"
-        Title="Torrent Player" Height="450" Width="800" MinHeight="300" MinWidth="400">
+        Title="Torrent Player" Height="450" Width="800" MinHeight="300" MinWidth="400"
+        Closing="Window_Closing"
+        x:Name="mainWindow" KeyDown="mainWindow_KeyDown">
+    <Window.Resources>
+        <converters:IndexConverter x:Key="IndexConverter"/>
+    </Window.Resources>
     <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -18,10 +24,10 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="File">
-                <MenuItem x:Name="OpenButton" Header="Open torrent file..." Click="OpenButton_Click"/>
-                <MenuItem Header="Open torrent address..."/>
+                <MenuItem x:Name="OpenButton" InputGestureText="Ctrl+O" Header="Open torrent file..." Click="OpenButton_Click"/>
+                <MenuItem x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open torrent address..."/>
                 <Separator />
-                <MenuItem Header="Close"/>
+                <MenuItem x:Name="CloseButton" InputGestureText="Ctrl+W" Header="Close"/>
             </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Header="Undo" Command="Undo"/>
@@ -74,7 +80,8 @@
                             <Button VerticalAlignment="Center" HorizontalAlignment="Center" Width="20" Height="20" Margin="0,0,10,0">
                                 <mi:MaterialIcon Icon="ic_play_arrow"/>
                             </Button>
-                            <Button x:Name="RemoveTorrentButton" Click="RemoveTorrentButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="20" Height="20" Margin="0,0,10,0">
+                            <Button Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Converter={StaticResource IndexConverter}}"
+                                x:Name="RemoveTorrentButton" Click="RemoveTorrentButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="20" Height="20" Margin="0,0,10,0">
                                 <mi:MaterialIcon Icon="ic_delete"/>
                             </Button>
                         </StackPanel>                        

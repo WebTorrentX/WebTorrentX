@@ -1,0 +1,31 @@
+﻿<Page x:Class="WebTorrentX.ViewModels.PlayerPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WebTorrentX.ViewModels"
+      xmlns:vlc="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
+      xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PlayerPage"
+      Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <vlc:VlcControl Grid.Row="0" x:Name="vlcControl" />
+        <Slider x:Name="progressBar" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Minimum="0" Maximum="{Binding Maximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Thumb.DragCompleted="progressBar_DragCompleted"/>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0">
+            <Button x:Name="PlayPauseButton" Click="PlayPauseButton_Click" Margin="0,0,10,0">
+                <mi:MaterialIcon Icon="ic_pause" x:Name="PlayPauseIcon"/>
+            </Button>
+            <Button x:Name="StopButton" Click="StopButton_Click" Margin="0,0,10,0">
+                <mi:MaterialIcon Icon="ic_stop"/>
+            </Button>
+        </StackPanel>        
+    </Grid>
+</Page>

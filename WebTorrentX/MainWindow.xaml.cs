@@ -1,68 +1,50 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
 using WebTorrentX.Controllers;
 using WebTorrentX.Models;
+using WebTorrentX.ViewModels;
 
 namespace WebTorrentX
 {
 
-    public sealed partial class MainWindow : Window
+    public sealed partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private DownloadController downloadController;
 
-        internal ObservableCollection<Torrent> TorrentSource
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propertyName)
         {
-            get { return downloadController.Torrents; }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private Page currentPage;
+        public Page CurrentPage
+        {
+            get
+            {
+                return currentPage;
+            }
+            set
+            {
+                currentPage = value;
+                OnPropertyChanged(nameof(CurrentPage));
+            }
         }
 
         public MainWindow()
         {
             InitializeComponent();
-            downloadController = new DownloadController();
-            downloadController.Error += (sender, message) => 
-            {
-                MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
-            };
             DataContext = this;
-            TorrentListView.ItemsSource = TorrentSource;
-        }
+            CurrentPage = new DownloadPage();
+        }        
 
-        private void OpenTorrent()
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-            {
-                downloadController.LoadTorrent(openFileDialog.FileName);
-            }
-        }
-
-        private void OpenButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenTorrent();
-        }     
-
-        private void RemoveTorrentButton_Click(object sender, RoutedEventArgs e)
-        {
-            var result = MessageBox.Show("Remove this torrent?", "WebTorrentX", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
-            {
-                int index = int.Parse((sender as Button).Tag.ToString());
-                if (index >= 0)
-                {
-                    downloadController.Torrents[index].Remove();
-                    downloadController.Torrents.RemoveAt(index);
-                }
-            }
-            
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            downloadController.Dispose();
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {            
+            //downloadController.Dispose();
         }
 
         private void mainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -72,7 +54,7 @@ namespace WebTorrentX
                 switch (e.Key)
                 {
                     case Key.O:
-                        OpenTorrent();
+                        //OpenTorrent();
                         break;
                     case Key.U:
                         break;

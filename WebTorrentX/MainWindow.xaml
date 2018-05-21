@@ -3,95 +3,138 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WebTorrentX"
-        xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
-        xmlns:converters="clr-namespace:WebTorrentX.Converters"
-        xmlns:viewmodels="clr-namespace:WebTorrentX.ViewModels"
         mc:Ignorable="d"
         Title="Torrent Player" Height="450" Width="800" MinHeight="300" MinWidth="400"
         Closing="Window_Closing"
-        x:Name="mainWindow" KeyDown="mainWindow_KeyDown">
-    <Grid Margin="0">
-        <Frame x:Name="mainFrame" Content="{Binding CurrentPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-    </Grid>
-    <!--<Window.Resources>
-        <converters:IndexConverter x:Key="IndexConverter"/>
+        x:Name="mainWindow" KeyDown="mainWindow_KeyDown"
+        Background="#1e1e1e">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type Menu}" x:Key="MenuStyle">
+            <Setter Property="Background" Value="#1b1b1c"/>
+            <Setter Property="Foreground" Value="LightGray"/>
+        </Style>
+
+        <Style TargetType="{x:Type MenuItem}" x:Key="MenuItemStyle">
+            <Setter Property="Background" Value="#1b1b1c"/>
+            <Setter Property="Foreground" Value="LightGray"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Border x:Name="Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Name="Col0" MinWidth="17" Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuTextColumnGroup"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIGTColumnGroup"/>
+                                    <ColumnDefinition x:Name="Col3" Width="14"/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Grid.Column="0" Margin="4,0,6,0" x:Name="Icon" VerticalAlignment="Center" ContentSource="Icon"/>
+                                <Grid Grid.Column="0" Visibility="Hidden" Margin="4,0,6,0" x:Name="GlyphPanel" VerticalAlignment="Center">
+                                    <Path x:Name="GlyphPanelpath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,2 L0,4.8 L2.5,7.4 L7.1,2.8 L7.1,0 L2.5,4.6 z" FlowDirection="LeftToRight"/>
+                                </Grid>
+                                <ContentPresenter Grid.Column="1"
+                                          Margin="{TemplateBinding Padding}"
+                                          x:Name="HeaderHost"
+                                          RecognizesAccessKey="True"
+                                          ContentSource="Header"/>
+                                <ContentPresenter Grid.Column="2"
+                                          Margin="8,1,8,1"
+                                          x:Name="IGTHost"
+                                          ContentSource="InputGestureText"
+                                          VerticalAlignment="Center"/>
+                                <Grid Grid.Column="3" Margin="4,0,6,0" x:Name="ArrowPanel" VerticalAlignment="Center">
+                                    <Path x:Name="ArrowPanelPath" HorizontalAlignment="Right" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,0 L0,8 L4,4 z"/>
+                                </Grid>
+                                <Popup IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                                       Placement="Right" x:Name="SubMenuPopup" Focusable="false" 
+                                       PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
+                                    <Border x:Name="SubMenuBorder" 
+                                            BorderBrush="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Menu}}}" 
+                                            BorderThickness="0" Padding="2"
+                                            Background="#1b1b1c">
+                                        <Grid x:Name="SubMenu" Grid.IsSharedSizeScope="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                        </Grid>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Role" Value="TopLevelHeader">
+                                <Setter Property="Padding" Value="6,1,6,1"/>
+                                <Setter Property="Placement" Value="Bottom" TargetName="SubMenuPopup"/>
+                                <Setter Property="MinWidth" Value="0" TargetName="Col0"/>
+                                <Setter Property="Width" Value="Auto" TargetName="Col3"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="Icon"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="GlyphPanel"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="IGTHost"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel"/>
+                            </Trigger>
+                            <Trigger Property="Role" Value="TopLevelItem">
+                                <Setter Property="Padding" Value="6,1,6,1"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel"/>
+                            </Trigger>
+                            <Trigger Property="Role" Value="SubmenuHeader">
+                                <Setter Property="DockPanel.Dock" Value="Top"/>
+                                <Setter Property="Padding" Value="0,2,0,2"/>
+                            </Trigger>
+                            <Trigger Property="Role" Value="SubmenuItem">
+                                <Setter Property="DockPanel.Dock" Value="Top"/>
+                                <Setter Property="Padding" Value="0,2,0,2"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel"/>
+                            </Trigger>
+                            <Trigger Property="IsSuspendingPopupAnimation" Value="true">
+                                <Setter Property="PopupAnimation" Value="None" TargetName="SubMenuPopup"/>
+                            </Trigger>
+                            <Trigger Property="Icon" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="Icon"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter Property="Visibility" Value="Visible" TargetName="GlyphPanel"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="Icon"/>
+                            </Trigger>
+                            <Trigger Property="IsHighlighted" Value="true">
+                                <Setter Property="Background" Value="LightGray" TargetName="Border"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="LightGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    <Grid >
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+    <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0">
-            <MenuItem Header="File">
-                <MenuItem x:Name="OpenButton" InputGestureText="Ctrl+O" Header="Open torrent file..." Click="OpenButton_Click"/>
-                <MenuItem x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open torrent address..."/>
-                <Separator />
-                <MenuItem x:Name="CloseButton" InputGestureText="Ctrl+W" Header="Close"/>
+        <Menu Grid.Row="0" Style="{StaticResource MenuStyle}">
+            <MenuItem Header="File" Style="{StaticResource MenuItemStyle}">
+                <MenuItem Foreground="LightGray" x:Name="OpenButton" InputGestureText="Ctrl+O" Header="Open torrent file..." Click="OpenButton_Click"/>
+                <MenuItem Foreground="LightGray" x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open torrent address..."/>
+                <Separator Margin="5" Foreground="LightGray"/>
+                <MenuItem Foreground="LightGray" x:Name="CloseButton" InputGestureText="Ctrl+W" Header="Close" Click="CloseButton_Click"/>
             </MenuItem>
-            <MenuItem Header="Edit">
-                <MenuItem Header="Undo" Command="Undo"/>
-                <MenuItem Header="Redo" Command="Redo"/>
-                <Separator/>
-                <MenuItem Header="Cut" Command="Cut"/>
-                <MenuItem Header="Copy" Command="Copy"/>
-                <MenuItem Header="Paste torrent address" Command="Paste"/>
-                <MenuItem Header="Delete" Command="Delete"/>
-                <MenuItem Header="SelectAll" Command="SelectAll"/>
-                <MenuItem Header="Preferences" />
+            <MenuItem Header="Edit" Style="{StaticResource MenuItemStyle}">
+                <MenuItem Foreground="LightGray" Header="Undo" InputGestureText="Ctrl+Z"/>
+                <MenuItem Foreground="LightGray" Header="Redo" InputGestureText="Ctrl+Y"/>
+                <Separator Foreground="LightGray" Margin="5"/>
+                <MenuItem Foreground="LightGray" Header="Cut" InputGestureText="Ctrl+X"/>
+                <MenuItem Foreground="LightGray" Header="Copy" InputGestureText="Ctrl+C"/>
+                <MenuItem Foreground="LightGray" Header="Paste torrent address" InputGestureText="Ctrl+V"/>
+                <MenuItem Foreground="LightGray" Header="Delete" InputGestureText="Del"/>
+                <MenuItem Foreground="LightGray" Header="SelectAll" InputGestureText="Ctrl+A"/>
+                <MenuItem Foreground="LightGray" Header="Preferences" />
             </MenuItem>
         </Menu>
-        <ListView x:Name="TorrentListView" Margin="0" Grid.Row="2">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid HorizontalAlignment="Stretch" Background="AliceBlue">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <WrapPanel Margin="0" Grid.Row="1" Grid.Column="0">
-                            <CheckBox IsChecked="{Binding IsDownloading, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Status, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
-                            <ProgressBar Width="60" Height="5" VerticalAlignment="Center" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0"/>
-                            <TextBlock Text="%" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Done, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Text=" mb / "/>
-                            <TextBlock Text="{Binding Size, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Text=" mb" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Peers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Text=" Peers" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Speed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Text=" KB/s" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding TimeRemaining, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </WrapPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
-                            <Button VerticalAlignment="Center" HorizontalAlignment="Center" Width="20" Height="20" Margin="0,0,10,0">
-                                <mi:MaterialIcon Icon="ic_play_arrow"/>
-                            </Button>
-                            <Button Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Converter={StaticResource IndexConverter}}"
-                                x:Name="RemoveTorrentButton" Click="RemoveTorrentButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="20" Height="20" Margin="0,0,10,0">
-                                <mi:MaterialIcon Icon="ic_delete"/>
-                            </Button>
-                        </StackPanel>                        
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </Grid>-->
+        <Frame Grid.Row="1" x:Name="mainFrame" NavigationUIVisibility="Hidden" Content="{Binding CurrentPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+    </Grid>
+   
 </Window>

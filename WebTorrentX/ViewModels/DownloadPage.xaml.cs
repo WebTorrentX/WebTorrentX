@@ -22,7 +22,6 @@ namespace WebTorrentX.ViewModels
         public DownloadPage()
         {
             InitializeComponent();
-            InitializeComponent();
             downloadController = new DownloadController();
             downloadController.Error += (sender, message) =>
             {
@@ -32,18 +31,9 @@ namespace WebTorrentX.ViewModels
             TorrentListView.ItemsSource = TorrentSource;
         }
 
-        private void OpenTorrent()
+        public void LoadTorrent(string filename)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-            {
-                downloadController.LoadTorrent(openFileDialog.FileName);
-            }
-        }
-
-        private void OpenButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenTorrent();
+            downloadController.LoadTorrent(filename);
         }
 
         private void RemoveTorrentButton_Click(object sender, RoutedEventArgs e)

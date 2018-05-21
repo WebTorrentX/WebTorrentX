@@ -31,6 +31,26 @@ namespace WebTorrentX.ViewModels
             }
         }
 
+        private int volumeBackup = 0;
+        public int Volume
+        {
+            get
+            {
+                return vlcControl.MediaPlayer.Audio.Volume;
+            }
+        }
+
+        public string Time
+        {
+            get
+            {
+                int p = (int)vlcControl.MediaPlayer.Time / 1000;
+                TimeSpan ts = new TimeSpan(0, 0, p);
+                string t = new TimeSpan(0, 0, (int)(vlcControl.MediaPlayer.Length / 1000)).ToString();
+                return ts.ToString() + " / " + t;
+            }
+        }
+
         
 
         public PlayerPage()
@@ -51,6 +71,7 @@ namespace WebTorrentX.ViewModels
         private void MediaPlayer_TimeChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs e)
         {
             Progress = vlcControl.MediaPlayer.Time;
+            OnPropertyChanged(nameof(Time));
         }
 
 
@@ -107,6 +128,59 @@ namespace WebTorrentX.ViewModels
         private void progressBar_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             vlcControl.MediaPlayer.Time = (long)(sender as Slider).Value;
+        }
+
+        private void SoundSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            vlcControl.MediaPlayer.Audio.Volume = (int)(sender as Slider).Value;
+            if (vlcControl.MediaPlayer.Audio.Volume == 0)
+                VolumeIcon.Icon = MaterialIconType.ic_volume_mute;
+            else if (vlcControl.MediaPlayer.Audio.Volume > 0 && vlcControl.MediaPlayer.Audio.Volume < 50)
+                VolumeIcon.Icon = MaterialIconType.ic_volume_down;
+            else VolumeIcon.Icon = MaterialIconType.ic_volume_up;
+            volumeBackup = 0;
+        }
+
+        private void SoundButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (volumeBackup == 0)
+            {
+                volumeBackup = vlcControl.MediaPlayer.Audio.Volume;
+                vlcControl.MediaPlayer.Audio.Volume = 0;
+                VolumeIcon.Icon = MaterialIconType.ic_volume_mute;
+            }
+            else
+            {
+                vlcControl.MediaPlayer.Audio.Volume = volumeBackup;
+                volumeBackup = 0;
+                if (vlcControl.MediaPlayer.Audio.Volume > 0 && vlcControl.MediaPlayer.Audio.Volume < 50)
+                    VolumeIcon.Icon = MaterialIconType.ic_volume_down;
+                else VolumeIcon.Icon = MaterialIconType.ic_volume_up;
+                
+            }
+            OnPropertyChanged(nameof(Volume));
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (NavigationService.CanGoBack)
+                NavigationService.GoBack();
+        }
+
+        private void FullScreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this).WindowState == WindowState.Normal)
+            {
+                Window.GetWindow(this).WindowStyle = WindowStyle.None;
+                Window.GetWindow(this).WindowState = WindowState.Maximized;
+                FullscreenIcon.Icon = MaterialIconType.ic_fullscreen_exit;
+            }
+            else
+            {
+                Window.GetWindow(this).WindowState = WindowState.Normal;
+                Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
+                FullscreenIcon.Icon = MaterialIconType.ic_fullscreen;
+            }
         }
     }
 }

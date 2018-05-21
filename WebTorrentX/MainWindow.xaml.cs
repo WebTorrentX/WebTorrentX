@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
-using WebTorrentX.Controllers;
-using WebTorrentX.Models;
 using WebTorrentX.ViewModels;
 
 namespace WebTorrentX
@@ -40,7 +36,20 @@ namespace WebTorrentX
             InitializeComponent();
             DataContext = this;
             CurrentPage = new DownloadPage();
-        }        
+        }
+
+        private void OpenTorrent()
+        {
+            if (CurrentPage is DownloadPage)
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    (CurrentPage as DownloadPage).LoadTorrent(openFileDialog.FileName);
+                }
+            }
+                
+        }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {            
@@ -54,7 +63,7 @@ namespace WebTorrentX
                 switch (e.Key)
                 {
                     case Key.O:
-                        //OpenTorrent();
+                        OpenTorrent();
                         break;
                     case Key.U:
                         break;
@@ -65,5 +74,16 @@ namespace WebTorrentX
                 }
             }
         }
+
+        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenTorrent();
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
     }
 }

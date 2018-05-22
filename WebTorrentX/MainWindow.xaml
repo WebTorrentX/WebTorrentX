@@ -133,8 +133,14 @@
                 <MenuItem Foreground="LightGray" Header="SelectAll" InputGestureText="Ctrl+A"/>
                 <MenuItem Foreground="LightGray" Header="Preferences" />
             </MenuItem>
+            <MenuItem Header="View" Style="{StaticResource MenuItemStyle}">
+                <MenuItem x:Name="FullScreenButton" Foreground="LightGray" Header="Full screen" 
+                          InputGestureText="F11" Click="FullScreenButton_Click"/>
+                <MenuItem x:Name="GoBackButton" Foreground="LightGray" Header="Go back"
+                          InputGestureText="Esc" Click="GoBackButton_Click"/>
+            </MenuItem>
         </Menu>
-        <Frame Grid.Row="1" x:Name="mainFrame" NavigationUIVisibility="Hidden" Content="{Binding CurrentPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <Frame Grid.Row="1" x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </Grid>
    
 </Window>

@@ -161,13 +161,26 @@ namespace WebTorrentX.ViewModels
             OnPropertyChanged(nameof(Volume));
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        public void GoBack()
         {
             if (NavigationService.CanGoBack)
+            {
+                if (Window.GetWindow(this).WindowState == WindowState.Maximized)
+                {
+                    Window.GetWindow(this).WindowState = WindowState.Normal;
+                    Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
+                    FullscreenIcon.Icon = MaterialIconType.ic_fullscreen;
+                }
                 NavigationService.GoBack();
+            }                
         }
 
-        private void FullScreenButton_Click(object sender, RoutedEventArgs e)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            GoBack();
+        }
+
+        public void Fullscreen()
         {
             if (Window.GetWindow(this).WindowState == WindowState.Normal)
             {
@@ -181,6 +194,11 @@ namespace WebTorrentX.ViewModels
                 Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
                 FullscreenIcon.Icon = MaterialIconType.ic_fullscreen;
             }
+        }
+
+        private void FullScreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            Fullscreen();
         }
     }
 }

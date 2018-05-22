@@ -17,38 +17,38 @@ namespace WebTorrentX
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private Page currentPage;
-        public Page CurrentPage
-        {
-            get
-            {
-                return currentPage;
-            }
-            set
-            {
-                currentPage = value;
-                OnPropertyChanged(nameof(CurrentPage));
-            }
-        }
-
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-            CurrentPage = new DownloadPage();
+            MainFrame.Content = new DownloadPage();
         }
 
         private void OpenTorrent()
         {
-            if (CurrentPage is DownloadPage)
+            if (MainFrame.Content is DownloadPage)
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 if (openFileDialog.ShowDialog() == true)
                 {
-                    (CurrentPage as DownloadPage).LoadTorrent(openFileDialog.FileName);
+                    (MainFrame.Content as DownloadPage).LoadTorrent(openFileDialog.FileName);
                 }
             }
                 
+        }
+
+        private void Fullscreen()
+        {
+            if (MainFrame.Content is PlayerPage)
+                (MainFrame.Content as PlayerPage).Fullscreen();
+        }
+
+        private void GoBack()
+        {
+            if (MainFrame.Content is PlayerPage)
+            {
+                (MainFrame.Content as PlayerPage).GoBack();
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -73,6 +73,14 @@ namespace WebTorrentX
                     default: break;
                 }
             }
+            if (e.Key == Key.Escape)
+            {
+                (MainFrame.Content as PlayerPage).GoBack();
+            }
+            if (e.Key == Key.F11)
+            {
+                Fullscreen();
+            }
         }
 
         private void OpenButton_Click(object sender, RoutedEventArgs e)
@@ -85,5 +93,14 @@ namespace WebTorrentX
             Close();
         }
 
+        private void FullScreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            Fullscreen();
+        }
+
+        private void GoBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            (MainFrame.Content as PlayerPage).GoBack();
+        }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
 using WebTorrentX.Controllers;
 using WebTorrentX.Models;
 
@@ -41,11 +40,10 @@ namespace WebTorrentX.ViewModels
             var result = MessageBox.Show("Remove this torrent?", "WebTorrentX", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                int index = int.Parse((sender as Button).Tag.ToString());
-                if (index >= 0)
+                if ((sender as Button).Tag is Torrent)
                 {
-                    downloadController.Torrents[index].Remove();
-                    downloadController.Torrents.RemoveAt(index);
+                    ((sender as Button).Tag as Torrent).Remove();
+                    downloadController.Torrents.Remove((sender as Button).Tag as Torrent);
                 }
             }
 
@@ -53,10 +51,9 @@ namespace WebTorrentX.ViewModels
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            int index = int.Parse((sender as Button).Tag.ToString());
-            if (index >= 0)
+            if ((sender as Button).Tag is Torrent)
             {
-                Application.Current.Properties["filename"] = Path.Combine(downloadController.DownloadPath, downloadController.Torrents[index].Name);
+                Application.Current.Properties["filename"] = Path.Combine(downloadController.DownloadPath, ((sender as Button).Tag as Torrent).Name);
                 NavigationService.Navigate(new PlayerPage());
             }
                 

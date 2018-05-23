@@ -78,7 +78,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controllers\DownloadController.cs" />
-    <Compile Include="Converters\IndexConverter.cs" />
     <Compile Include="Models\Torrent.cs" />
     <Compile Include="ViewModels\DownloadPage.xaml.cs">
       <DependentUpon>DownloadPage.xaml</DependentUpon>

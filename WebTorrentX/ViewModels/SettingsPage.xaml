@@ -1,0 +1,28 @@
+﻿<Page x:Class="WebTorrentX.ViewModels.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SettingsPage">
+
+    <StackPanel Orientation="Vertical">
+        <DockPanel Margin="10" LastChildFill="True">
+            <TextBlock DockPanel.Dock="Left" Text="Download Location:" Margin="10" VerticalAlignment="Center" Foreground="LightGray"/>
+            <Button DockPanel.Dock="Right" x:Name="ChangeLocationButton" Content="Change" Click="ChangeLocationButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
+            <TextBox Text="{Binding Location, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10"/>            
+        </DockPanel>
+        <CheckBox Content="Watch for new .torrent files and add them immediately" Foreground="LightGray" Margin="20, 10, 10, 0"/>
+        <DockPanel Margin="10" LastChildFill="True">
+            <TextBlock DockPanel.Dock="Left" Text="Folder to watch:" Margin="10" VerticalAlignment="Center" Foreground="LightGray"/>
+            <Button DockPanel.Dock="Right" x:Name="ChangeWatchFolderButton" Content="Change" Click="ChangeWatchFolderButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
+            <TextBox Text="{Binding WatchFolder, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10"/>
+        </DockPanel>
+        <CheckBox Content="Open WebTorrentX on startup" Foreground="LightGray" Margin="20, 10, 10, 10"/>
+        <DockPanel Margin="10" LastChildFill="False">
+            <TextBlock DockPanel.Dock="Left" Text="WebTorrentX is not default torrent app" Foreground="LightGray" Margin="10"/>
+            <Button DockPanel.Dock="Left" x:Name="MakeDefaultAppButton" Content="Make default" Click="MakeDefaultAppButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
+        </DockPanel>
+    </StackPanel>
+</Page>

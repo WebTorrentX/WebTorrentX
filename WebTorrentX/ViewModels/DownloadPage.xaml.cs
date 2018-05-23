@@ -35,6 +35,18 @@ namespace WebTorrentX.ViewModels
             downloadController.LoadTorrent(filename);
         }
 
+        public void PauseAll()
+        {
+            foreach (var torrent in downloadController.Torrents)
+                torrent.IsDownloading = false;
+        }
+
+        public void ResumeAll()
+        {
+            foreach (var torrent in downloadController.Torrents)
+                torrent.IsDownloading = true;
+        }
+
         private void RemoveTorrentButton_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show("Remove this torrent?", "WebTorrentX", MessageBoxButton.YesNo);

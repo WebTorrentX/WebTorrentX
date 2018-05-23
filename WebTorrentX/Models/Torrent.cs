@@ -108,11 +108,11 @@ namespace WebTorrentX.Models
             {
                 if (handle != null)
                 {
-                    if (handle.IsPaused)
+                    if (value && handle.IsPaused)
                     {
                         handle.Resume();
                     }
-                    else
+                    else if (!value && !handle.IsPaused)
                     {
                         handle.Pause();
                         handle.SaveResumeData();

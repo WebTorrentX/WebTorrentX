@@ -49,6 +49,10 @@ namespace WebTorrentX
             {
                 (MainFrame.Content as PlayerPage).GoBack();
             }
+            else if (MainFrame.Content is SettingsPage)
+            {
+                (MainFrame.Content as SettingsPage).GoBack();
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -75,7 +79,7 @@ namespace WebTorrentX
             }
             if (e.Key == Key.Escape)
             {
-                (MainFrame.Content as PlayerPage).GoBack();
+                GoBack();
             }
             if (e.Key == Key.F11)
             {
@@ -93,6 +97,11 @@ namespace WebTorrentX
             Close();
         }
 
+        private void PreferencesButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.NavigationService.Navigate(new SettingsPage());
+        }
+
         private void FullScreenButton_Click(object sender, RoutedEventArgs e)
         {
             Fullscreen();
@@ -100,7 +109,49 @@ namespace WebTorrentX
 
         private void GoBackButton_Click(object sender, RoutedEventArgs e)
         {
-            (MainFrame.Content as PlayerPage).GoBack();
+            GoBack();
+        }
+
+        private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void IncreaseVolumeButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DecreaseVolumeButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void IncreaseSpeedButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DecreaseSpeedButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void AddSubtitlesButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PauseAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame.Content is DownloadPage)
+                (MainFrame.Content as DownloadPage).PauseAll();
+        }
+
+        private void ResumeAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame.Content is DownloadPage)
+                (MainFrame.Content as DownloadPage).ResumeAll();
         }
     }
 }

@@ -70,5 +70,15 @@ namespace WebTorrentX.ViewModels
             }
                 
         }
+
+        private void TorrentListView_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                for (int i = 0; i < files.Length; i++)
+                    LoadTorrent(files[i]);
+            }
+        }
     }
 }

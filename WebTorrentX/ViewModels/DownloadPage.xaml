@@ -150,7 +150,7 @@
         </Grid.RowDefinitions>
         <ListView x:Name="TorrentListView" Margin="0" Grid.Row="1" 
                   ItemTemplate="{StaticResource TorrentListItemTemplate}"
-                  Style="{StaticResource ListViewStyle}" >
+                  Style="{StaticResource ListViewStyle}" Drop="TorrentListView_Drop" AllowDrop="True">
         </ListView>
     </Grid>
 </Page>

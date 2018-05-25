@@ -11,15 +11,17 @@
         <DockPanel Margin="10" LastChildFill="True">
             <TextBlock DockPanel.Dock="Left" Text="Download Location:" Margin="10" VerticalAlignment="Center" Foreground="LightGray"/>
             <Button DockPanel.Dock="Right" x:Name="ChangeLocationButton" Content="Change" Click="ChangeLocationButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
-            <TextBox Text="{Binding Location, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10"/>            
+            <TextBox Text="{Binding Location, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10" IsReadOnly="True"/>            
         </DockPanel>
-        <CheckBox Content="Watch for new .torrent files and add them immediately" Foreground="LightGray" Margin="20, 10, 10, 0"/>
+        <CheckBox IsChecked="{Binding WatchForNewFiles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Content="Watch for new .torrent files and add them immediately" Foreground="LightGray" Margin="20, 10, 10, 0"/>
         <DockPanel Margin="10" LastChildFill="True">
             <TextBlock DockPanel.Dock="Left" Text="Folder to watch:" Margin="10" VerticalAlignment="Center" Foreground="LightGray"/>
             <Button DockPanel.Dock="Right" x:Name="ChangeWatchFolderButton" Content="Change" Click="ChangeWatchFolderButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
-            <TextBox Text="{Binding WatchFolder, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10"/>
+            <TextBox Text="{Binding WatchFolder, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10" IsReadOnly="True"/>
         </DockPanel>
-        <CheckBox Content="Open WebTorrentX on startup" Foreground="LightGray" Margin="20, 10, 10, 10"/>
+        <CheckBox IsChecked="{Binding OpenOnStartup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Content="Open WebTorrentX on startup" Foreground="LightGray" Margin="20, 10, 10, 10"/>
         <DockPanel Margin="10" LastChildFill="False">
             <TextBlock DockPanel.Dock="Left" Text="WebTorrentX is not default torrent app" Foreground="LightGray" Margin="10"/>
             <Button DockPanel.Dock="Left" x:Name="MakeDefaultAppButton" Content="Make default" Click="MakeDefaultAppButton_Click" Margin="10" Padding="5, 0, 5, 0"/>

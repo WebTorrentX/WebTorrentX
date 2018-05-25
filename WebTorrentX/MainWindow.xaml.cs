@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,8 +22,17 @@ namespace WebTorrentX
         public MainWindow()
         {
             InitializeComponent();
+            if (Properties.Settings.Default.Location == string.Empty)
+            {
+                Properties.Settings.Default.Location = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+                Properties.Settings.Default.Save();
+            }
             DataContext = this;
             MainFrame.Content = new DownloadPage();
+            if (Application.Current.Properties["openfile"] != null)
+            {
+                (MainFrame.Content as DownloadPage).LoadTorrent(Application.Current.Properties["openfile"].ToString());
+            }
         }
 
         private void OpenTorrent()
@@ -153,5 +164,6 @@ namespace WebTorrentX
             if (MainFrame.Content is DownloadPage)
                 (MainFrame.Content as DownloadPage).ResumeAll();
         }
+
     }
 }

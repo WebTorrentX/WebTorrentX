@@ -234,8 +234,12 @@ namespace WebTorrentX.Models
         public void Remove()
         {
             active = false;
-            File.Delete(Path.Combine(torrentDir, handle.TorrentFile.Name + ".torrent"));
-            File.Delete(Path.Combine(fastResumeDir, handle.TorrentFile.Name + ".fastresume"));
+            string torrent = Path.Combine(torrentDir, handle.TorrentFile.Name + ".torrent");
+            if (File.Exists(torrent))
+                File.Delete(torrent);
+            string fastResume = Path.Combine(fastResumeDir, handle.TorrentFile.Name + ".fastresume");
+            if (File.Exists(fastResume))
+                File.Delete(fastResume);
         }
     }
 }

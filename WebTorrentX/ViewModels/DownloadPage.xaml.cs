@@ -13,6 +13,8 @@ namespace WebTorrentX.ViewModels
 
         private DownloadController downloadController;
 
+        private FileSystemWatcher watcher;
+
         internal ObservableCollection<Torrent> TorrentSource
         {
             get { return downloadController.Torrents; }
@@ -28,6 +30,29 @@ namespace WebTorrentX.ViewModels
             };
             DataContext = this;
             TorrentListView.ItemsSource = TorrentSource;
+        }
+        
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Properties.Settings.Default.WatchForNewFiles)
+            {
+                watcher = new FileSystemWatcher();
+                watcher.Path = Properties.Settings.Default.WatchFolder;
+                watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+                watcher.Filter = "*.torrent";
+                watcher.Created += Watcher_Created;
+                watcher.EnableRaisingEvents = true;
+            }
+            else if (watcher != null)
+                watcher.Dispose();
+        }
+
+        private void Watcher_Created(object sender, FileSystemEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                downloadController.LoadTorrent(e.FullPath);
+            });
         }
 
         public void LoadTorrent(string filename)
@@ -80,5 +105,6 @@ namespace WebTorrentX.ViewModels
                     LoadTorrent(files[i]);
             }
         }
+
     }
 }

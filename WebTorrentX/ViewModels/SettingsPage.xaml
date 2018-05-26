@@ -3,28 +3,60 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SettingsPage">
 
+    <Page.Resources>
+        <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Foreground" Value="LightGray"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border BorderBrush="LightGray" BorderThickness="0" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Foreground" Value="LightGray"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.25"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
     <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal">
+            <Button Style="{StaticResource ButtonStyle}" Margin="5" x:Name="BackButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackButton_Click">
+                <mi:MaterialIcon Icon="ic_chevron_left"/>
+            </Button>
+        </StackPanel>
         <DockPanel Margin="10" LastChildFill="True">
             <TextBlock DockPanel.Dock="Left" Text="Download Location:" Margin="10" VerticalAlignment="Center" Foreground="LightGray"/>
-            <Button DockPanel.Dock="Right" x:Name="ChangeLocationButton" Content="Change" Click="ChangeLocationButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
+            <Button Style="{StaticResource ButtonStyle}" DockPanel.Dock="Right" x:Name="ChangeLocationButton" Content="Change" Click="ChangeLocationButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
             <TextBox Text="{Binding Location, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10" IsReadOnly="True"/>            
         </DockPanel>
         <CheckBox IsChecked="{Binding WatchForNewFiles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             Content="Watch for new .torrent files and add them immediately" Foreground="LightGray" Margin="20, 10, 10, 0"/>
         <DockPanel Margin="10" LastChildFill="True">
             <TextBlock DockPanel.Dock="Left" Text="Folder to watch:" Margin="10" VerticalAlignment="Center" Foreground="LightGray"/>
-            <Button DockPanel.Dock="Right" x:Name="ChangeWatchFolderButton" Content="Change" Click="ChangeWatchFolderButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
+            <Button Style="{StaticResource ButtonStyle}" DockPanel.Dock="Right" x:Name="ChangeWatchFolderButton" Content="Change" Click="ChangeWatchFolderButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
             <TextBox Text="{Binding WatchFolder, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10" IsReadOnly="True"/>
         </DockPanel>
         <CheckBox IsChecked="{Binding OpenOnStartup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             Content="Open WebTorrentX on startup" Foreground="LightGray" Margin="20, 10, 10, 10"/>
         <DockPanel Margin="10" LastChildFill="False">
             <TextBlock DockPanel.Dock="Left" Text="WebTorrentX is not default torrent app" Foreground="LightGray" Margin="10"/>
-            <Button DockPanel.Dock="Left" x:Name="MakeDefaultAppButton" Content="Make default" Click="MakeDefaultAppButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
+            <Button Style="{StaticResource ButtonStyle}" DockPanel.Dock="Left" x:Name="MakeDefaultAppButton" Content="Make default" Click="MakeDefaultAppButton_Click" Margin="10" Padding="5, 0, 5, 0"/>
         </DockPanel>
     </StackPanel>
 </Page>

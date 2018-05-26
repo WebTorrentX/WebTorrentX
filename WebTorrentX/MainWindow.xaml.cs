@@ -110,7 +110,8 @@ namespace WebTorrentX
 
         private void PreferencesButton_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.NavigationService.Navigate(new SettingsPage());
+            if (MainFrame.Content is SettingsPage == false)
+                MainFrame.NavigationService.Navigate(new SettingsPage());
         }
 
         private void FullScreenButton_Click(object sender, RoutedEventArgs e)

@@ -61,8 +61,8 @@ namespace WebTorrentX.ViewModels
                     value = false;
                 }
                 Properties.Settings.Default.WatchForNewFiles = value;
-                Properties.Settings.Default.Save();
-                OnPropertyChanged(nameof(WatchFolder));
+                Properties.Settings.Default.Save();                
+                OnPropertyChanged(nameof(WatchForNewFiles));
             }
         }
 
@@ -148,5 +148,11 @@ namespace WebTorrentX.ViewModels
             }
                 
         }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            GoBack();
+        }
+
     }
 }

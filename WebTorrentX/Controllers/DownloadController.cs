@@ -60,8 +60,6 @@ namespace WebTorrentX.Controllers
             else session.ListenOn(minPort, maxPort);
         }
 
-
-
         private void SaveSessionState()
         {
             if (Torrents.Count > 0) File.WriteAllBytes(sesStateFile, session.SaveState());
@@ -72,7 +70,7 @@ namespace WebTorrentX.Controllers
             if (!Directory.Exists(torrentDir))
                 Directory.CreateDirectory(torrentDir);
             TorrentInfo info = new TorrentInfo(filename);
-            File.Copy(filename, Path.Combine(torrentDir, info.Name + ".torrent"));
+            File.Copy(filename, Path.Combine(torrentDir, info.Name + ".torrent"), true);
             var result = from t in Torrents where t.InfoHash.ToHex() == info.InfoHash select t;
             if (result == null || result.Count() == 0)
             {
@@ -88,9 +86,7 @@ namespace WebTorrentX.Controllers
             else
             {
                 Error?.Invoke(this, "This torrent already exists");
-            }
-            
-
+            }   
         }
 
         public void Dispose()

@@ -124,18 +124,9 @@
                 <MenuItem x:Name="OpenButton" InputGestureText="Ctrl+O" Header="Open Torrent File..." Click="OpenButton_Click"/>
                 <MenuItem x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open Torrent Address..."/>
                 <Separator Margin="0,5,0,5"/>
-                <MenuItem x:Name="CloseButton" InputGestureText="Ctrl+W" Header="Close" Click="CloseButton_Click"/>
-            </MenuItem>
-            <MenuItem Header="Edit">
-                <MenuItem Header="Undo" InputGestureText="Ctrl+Z"/>
-                <MenuItem Header="Redo" InputGestureText="Ctrl+Y"/>
-                <Separator Margin="0,5,0,5" />
-                <MenuItem Header="Cut" InputGestureText="Ctrl+X"/>
-                <MenuItem Header="Copy" InputGestureText="Ctrl+C"/>
-                <MenuItem Header="Paste Torrent Address" InputGestureText="Ctrl+V"/>
-                <MenuItem Header="Delete" InputGestureText="Del"/>
-                <MenuItem Header="Select All" InputGestureText="Ctrl+A"/>
                 <MenuItem Header="Preferences" x:Name="PreferencesButton" Click="PreferencesButton_Click"/>
+                <Separator Margin="0,5,0,5"/>
+                <MenuItem x:Name="CloseButton" InputGestureText="Ctrl+W" Header="Close" Click="CloseButton_Click"/>
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem x:Name="FullScreenButton" Header="Full Screen" 

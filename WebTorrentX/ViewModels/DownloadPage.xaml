@@ -7,7 +7,8 @@
       xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="WebTorrentX - Download">
+      Title="WebTorrentX - Download"
+      Loaded="Page_Loaded">
     <Page.Resources>
 
         <Style TargetType="{x:Type Menu}" x:Key="MenuStyle">

@@ -125,7 +125,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Button Style="{StaticResource PlayerButtonStyle}" Margin="5" x:Name="BackButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackButton_Click">
-            <mi:MaterialIcon Icon="ic_arrow_back"/>            
+            <mi:MaterialIcon Icon="ic_chevron_left"/>            
         </Button>
         <vlc:VlcControl Grid.Row="1" x:Name="vlcControl" />
 

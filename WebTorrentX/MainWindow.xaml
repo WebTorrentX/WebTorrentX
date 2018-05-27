@@ -102,7 +102,7 @@
                                         <Setter Property="Foreground" Value="Black"/>
                                     </Trigger>
                                     <Trigger Property="IsEnabled" Value="false">
-                                        <Setter Property="Foreground" Value="LightGray"/>
+                                        <Setter Property="Foreground" Value="Gray"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -130,11 +130,13 @@
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem x:Name="FullScreenButton" Header="Full Screen" 
-                          InputGestureText="F11" Click="FullScreenButton_Click"/>
+                          InputGestureText="F11" Click="FullScreenButton_Click" 
+                          IsEnabled="{Binding IsPlayerPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <MenuItem x:Name="GoBackButton" Header="Go Back"
-                          InputGestureText="Esc" Click="GoBackButton_Click"/>
+                          InputGestureText="Esc" Click="GoBackButton_Click"
+                          IsEnabled="{Binding CanGoBack, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
             </MenuItem>
-            <MenuItem Header="Playback">
+            <MenuItem Header="Playback" IsEnabled="{Binding IsPlayerPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <MenuItem x:Name="PlayPauseButton" Header="Play/Pause" InputGestureText="Space" Click="PlayPauseButton_Click"/>
                 <Separator Margin="0,5,0,5"/>
                 <MenuItem x:Name="IncreaseVolumeButton" Header="Increase Volume" InputGestureText="Ctrl + Up Arrow" Click="IncreaseVolumeButton_Click"/>
@@ -145,12 +147,12 @@
                 <Separator Margin="0,5,0,5"/>
                 <MenuItem x:Name="AddSubtitlesButton" Header="Add Subtitles File" Click="AddSubtitlesButton_Click"/>
             </MenuItem>
-            <MenuItem Header="Transfers">
+            <MenuItem Header="Transfers" IsEnabled="{Binding IsDownloadPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <MenuItem x:Name="PauseAllButton" Header="Pause All" Click="PauseAllButton_Click"/>
                 <MenuItem x:Name="ResumeAllButton" Header="Resume All" Click="ResumeAllButton_Click"/>
             </MenuItem>            
         </Menu>
-        <Frame Grid.Row="1" x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Frame Grid.Row="1" x:Name="MainFrame" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated"/>
     </Grid>
    
 </Window>

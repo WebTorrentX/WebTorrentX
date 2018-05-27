@@ -14,8 +14,9 @@ namespace WebTorrentX.Models
         private Session session;
         private TorrentHandle handle;
 
-        private const string fastResumeDir = ".resume";
-        private const string torrentDir = ".torrents";
+
+        private readonly string fastResumeDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".resume");
+        private readonly string torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
 
         private string name = string.Empty;
         public string Name
@@ -136,6 +137,18 @@ namespace WebTorrentX.Models
             }
         }
 
+        public string DownloadPath
+        {
+            get
+            {
+                if (handle != null)
+                {
+                    return handle.QueryStatus().SavePath;
+                }
+                else return string.Empty;
+            }
+        }
+
         public SHA1Hash InfoHash
         {
             get
@@ -157,6 +170,7 @@ namespace WebTorrentX.Models
 
         public static Torrent Create(AddTorrentParams addParams, Session session)
         {
+
             Torrent torrent = new Torrent(addParams, session);            
             Task.Run(delegate
             {
@@ -165,7 +179,7 @@ namespace WebTorrentX.Models
                     torrent.UpdateProperties();
                     Thread.Sleep(1000);
                 }
-            });
+            });            
             return torrent;
         }
 

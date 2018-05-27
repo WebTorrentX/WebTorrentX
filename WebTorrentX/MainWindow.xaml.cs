@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
 using WebTorrentX.ViewModels;
@@ -19,6 +18,30 @@ namespace WebTorrentX
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public bool IsDownloadPage
+        {
+            get
+            {
+                return MainFrame.Content is DownloadPage;
+            }
+        }
+
+        public bool IsPlayerPage
+        {
+            get
+            {
+                return MainFrame.Content is PlayerPage;
+            }
+        }
+
+        public bool CanGoBack
+        {
+            get
+            {
+                return MainFrame.NavigationService.CanGoBack;
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -28,11 +51,7 @@ namespace WebTorrentX
                 Properties.Settings.Default.Save();
             }
             DataContext = this;
-            MainFrame.Content = new DownloadPage();
-            if (Application.Current.Properties["openfile"] != null)
-            {
-                (MainFrame.Content as DownloadPage).LoadTorrent(Application.Current.Properties["openfile"].ToString());
-            }
+            MainFrame.Content = new DownloadPage();            
         }
 
         private void OpenTorrent()
@@ -66,9 +85,27 @@ namespace WebTorrentX
             }
         }
 
+        private void PlayPause()
+        {
+            if (MainFrame.Content is PlayerPage)
+                (MainFrame.Content as PlayerPage).PlayPause();
+        }
+
+        private void IncreaseVolume()
+        {
+            if (MainFrame.Content is PlayerPage)
+                (MainFrame.Content as PlayerPage).IncreaseVolume();
+        }
+
+        private void DecreaseVolume()
+        {
+            if (MainFrame.Content is PlayerPage)
+                (MainFrame.Content as PlayerPage).DecreaseVolume();
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {            
-            //downloadController.Dispose();
+            App.downloadController.Dispose();
         }
 
         private void mainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -85,16 +122,27 @@ namespace WebTorrentX
                     case Key.W:
                         Close();
                         break;
+                    case Key.Up:
+                        IncreaseVolume();
+                        break;
+                    case Key.Down:
+                        DecreaseVolume();
+                        break;
                     default: break;
                 }
             }
-            if (e.Key == Key.Escape)
+            switch (e.Key)
             {
-                GoBack();
-            }
-            if (e.Key == Key.F11)
-            {
-                Fullscreen();
+                case Key.Escape:
+                    GoBack();
+                    break;
+                case Key.F11:
+                    Fullscreen();
+                    break;
+                case Key.Space:
+                    PlayPause();
+                    break;
+                default: break;
             }
         }
 
@@ -126,17 +174,17 @@ namespace WebTorrentX
 
         private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
-
+            PlayPause();
         }
 
         private void IncreaseVolumeButton_Click(object sender, RoutedEventArgs e)
         {
-
+            IncreaseVolume();
         }
 
         private void DecreaseVolumeButton_Click(object sender, RoutedEventArgs e)
         {
-
+            DecreaseVolume();
         }
 
         private void IncreaseSpeedButton_Click(object sender, RoutedEventArgs e)
@@ -166,5 +214,11 @@ namespace WebTorrentX
                 (MainFrame.Content as DownloadPage).ResumeAll();
         }
 
+        private void MainFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            OnPropertyChanged(nameof(IsDownloadPage));
+            OnPropertyChanged(nameof(IsPlayerPage));
+            OnPropertyChanged(nameof(CanGoBack));
+        }
     }
 }

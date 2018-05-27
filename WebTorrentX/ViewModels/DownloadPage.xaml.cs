@@ -11,25 +11,27 @@ namespace WebTorrentX.ViewModels
     public sealed partial class DownloadPage : Page
     {
 
-        private DownloadController downloadController;
-
         private FileSystemWatcher watcher;
 
         internal ObservableCollection<Torrent> TorrentSource
         {
-            get { return downloadController.Torrents; }
+            get { return App.downloadController.Torrents; }
         }
 
         public DownloadPage()
         {
             InitializeComponent();
-            downloadController = new DownloadController();
-            downloadController.Error += (sender, message) =>
+            App.downloadController = new DownloadController();
+            App.downloadController.Error += (sender, message) =>
             {
                 MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
             };
             DataContext = this;
             TorrentListView.ItemsSource = TorrentSource;
+            if (Application.Current.Properties["openfile"] != null)
+            {
+                LoadTorrent((string)Application.Current.Properties["openfile"]);
+            }
         }
         
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -51,24 +53,24 @@ namespace WebTorrentX.ViewModels
         {
             Dispatcher.Invoke(() =>
             {
-                downloadController.LoadTorrent(e.FullPath);
+                App.downloadController.LoadTorrent(e.FullPath);
             });
         }
 
         public void LoadTorrent(string filename)
         {
-            downloadController.LoadTorrent(filename);
+            App.downloadController.LoadTorrent(filename);
         }
 
         public void PauseAll()
         {
-            foreach (var torrent in downloadController.Torrents)
+            foreach (var torrent in App.downloadController.Torrents)
                 torrent.IsDownloading = false;
         }
 
         public void ResumeAll()
         {
-            foreach (var torrent in downloadController.Torrents)
+            foreach (var torrent in App.downloadController.Torrents)
                 torrent.IsDownloading = true;
         }
 
@@ -80,7 +82,7 @@ namespace WebTorrentX.ViewModels
                 if ((sender as Button).Tag is Torrent)
                 {
                     ((sender as Button).Tag as Torrent).Remove();
-                    downloadController.Torrents.Remove((sender as Button).Tag as Torrent);
+                    App.downloadController.Torrents.Remove((sender as Button).Tag as Torrent);
                 }
             }
 
@@ -90,10 +92,9 @@ namespace WebTorrentX.ViewModels
         {
             if ((sender as Button).Tag is Torrent)
             {
-                Application.Current.Properties["filename"] = Path.Combine(downloadController.DownloadPath, ((sender as Button).Tag as Torrent).Name);
+                Application.Current.Properties["filename"] = Path.Combine(((sender as Button).Tag as Torrent).DownloadPath, ((sender as Button).Tag as Torrent).Name);
                 NavigationService.Navigate(new PlayerPage());
-            }
-                
+            }                
         }
 
         private void TorrentListView_Drop(object sender, DragEventArgs e)

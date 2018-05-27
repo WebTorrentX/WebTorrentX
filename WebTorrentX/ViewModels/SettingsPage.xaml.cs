@@ -85,7 +85,7 @@ namespace WebTorrentX.ViewModels
                 }
                 Properties.Settings.Default.OpenOnStartup = value;
                 Properties.Settings.Default.Save();
-                OnPropertyChanged(nameof(WatchFolder));
+                OnPropertyChanged(nameof(OpenOnStartup));
             }
         }
 

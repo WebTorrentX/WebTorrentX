@@ -38,6 +38,17 @@ namespace WebTorrentX.ViewModels
             {
                 return vlcControl.MediaPlayer.Audio.Volume;
             }
+            set
+            {
+                if (value < 0 || value > 100) return;
+                vlcControl.MediaPlayer.Audio.Volume = value;
+                if (vlcControl.MediaPlayer.Audio.Volume == 0)
+                    VolumeIcon.Icon = MaterialIconType.ic_volume_mute;
+                else if (vlcControl.MediaPlayer.Audio.Volume > 0 && vlcControl.MediaPlayer.Audio.Volume < 50)
+                    VolumeIcon.Icon = MaterialIconType.ic_volume_down;
+                else VolumeIcon.Icon = MaterialIconType.ic_volume_up;
+                OnPropertyChanged(nameof(Volume));
+            }
         }
 
         public string Time
@@ -101,16 +112,7 @@ namespace WebTorrentX.ViewModels
 
         private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (vlcControl.MediaPlayer.IsPlaying)
-            {
-                vlcControl.MediaPlayer.Pause();
-                PlayPauseIcon.Icon = MaterialIconType.ic_play_arrow;
-            }
-            else
-            {
-                vlcControl.MediaPlayer.Play();
-                PlayPauseIcon.Icon = MaterialIconType.ic_pause; 
-            }
+            PlayPause();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -132,12 +134,7 @@ namespace WebTorrentX.ViewModels
 
         private void SoundSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            vlcControl.MediaPlayer.Audio.Volume = (int)(sender as Slider).Value;
-            if (vlcControl.MediaPlayer.Audio.Volume == 0)
-                VolumeIcon.Icon = MaterialIconType.ic_volume_mute;
-            else if (vlcControl.MediaPlayer.Audio.Volume > 0 && vlcControl.MediaPlayer.Audio.Volume < 50)
-                VolumeIcon.Icon = MaterialIconType.ic_volume_down;
-            else VolumeIcon.Icon = MaterialIconType.ic_volume_up;
+            Volume = (int)(sender as Slider).Value;
             volumeBackup = 0;
         }
 
@@ -145,20 +142,14 @@ namespace WebTorrentX.ViewModels
         {
             if (volumeBackup == 0)
             {
-                volumeBackup = vlcControl.MediaPlayer.Audio.Volume;
-                vlcControl.MediaPlayer.Audio.Volume = 0;
-                VolumeIcon.Icon = MaterialIconType.ic_volume_mute;
+                volumeBackup = Volume;
+                Volume = 0;
             }
             else
             {
-                vlcControl.MediaPlayer.Audio.Volume = volumeBackup;
-                volumeBackup = 0;
-                if (vlcControl.MediaPlayer.Audio.Volume > 0 && vlcControl.MediaPlayer.Audio.Volume < 50)
-                    VolumeIcon.Icon = MaterialIconType.ic_volume_down;
-                else VolumeIcon.Icon = MaterialIconType.ic_volume_up;
-                
+                Volume = volumeBackup;
+                volumeBackup = 0;                
             }
-            OnPropertyChanged(nameof(Volume));
         }
 
         public void GoBack()
@@ -199,6 +190,30 @@ namespace WebTorrentX.ViewModels
         private void FullScreenButton_Click(object sender, RoutedEventArgs e)
         {
             Fullscreen();
+        }
+
+        public void PlayPause()
+        {
+            if (vlcControl.MediaPlayer.IsPlaying)
+            {
+                vlcControl.MediaPlayer.Pause();
+                PlayPauseIcon.Icon = MaterialIconType.ic_play_arrow;
+            }
+            else
+            {
+                vlcControl.MediaPlayer.Play();
+                PlayPauseIcon.Icon = MaterialIconType.ic_pause;
+            }
+        }
+
+        public void IncreaseVolume()
+        {
+            Volume++;
+        }
+
+        public void DecreaseVolume()
+        {
+            Volume--;
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using MaterialIcons;
@@ -11,23 +9,41 @@ namespace WebTorrentX.ViewModels
 
     public sealed partial class PlayerPage : Page, INotifyPropertyChanged
     {
-
-        private double progress;
-        public double Progress
-        {
-            get { return progress; }
-            set
-            {
-                progress = value;
-                OnPropertyChanged(nameof(Progress));
-            }
-        }
-
-        public long Maximum
+        private bool subtitleEnabled = false;
+        public bool SubtitleEnabled
         {
             get
             {
-                return vlcControl.MediaPlayer.Length;
+                return subtitleEnabled;
+            }
+            set
+            {
+                subtitleEnabled = value;
+                OnPropertyChanged(nameof(SubtitleEnabled));
+            }
+        }
+
+        public string Subtitle
+        {
+            get
+            {
+                return "";
+            }
+        }
+
+        public double Progress
+        {
+            get
+            {
+                return vlcPlayer.Time.TotalSeconds;
+            }
+        }
+
+        public double Maximum
+        {
+            get
+            {
+                return vlcPlayer.Length.TotalSeconds;
             }
         }
 
@@ -36,15 +52,15 @@ namespace WebTorrentX.ViewModels
         {
             get
             {
-                return vlcControl.MediaPlayer.Audio.Volume;
+                return vlcPlayer.Volume;
             }
             set
             {
                 if (value < 0 || value > 100) return;
-                vlcControl.MediaPlayer.Audio.Volume = value;
-                if (vlcControl.MediaPlayer.Audio.Volume == 0)
+                vlcPlayer.Volume = value;
+                if (vlcPlayer.Volume == 0)
                     VolumeIcon.Icon = MaterialIconType.ic_volume_mute;
-                else if (vlcControl.MediaPlayer.Audio.Volume > 0 && vlcControl.MediaPlayer.Audio.Volume < 50)
+                else if (vlcPlayer.Volume > 0 && vlcPlayer.Volume < 50)
                     VolumeIcon.Icon = MaterialIconType.ic_volume_down;
                 else VolumeIcon.Icon = MaterialIconType.ic_volume_up;
                 OnPropertyChanged(nameof(Volume));
@@ -55,10 +71,7 @@ namespace WebTorrentX.ViewModels
         {
             get
             {
-                int p = (int)vlcControl.MediaPlayer.Time / 1000;
-                TimeSpan ts = new TimeSpan(0, 0, p);
-                string t = new TimeSpan(0, 0, (int)(vlcControl.MediaPlayer.Length / 1000)).ToString();
-                return ts.ToString() + " / " + t;
+                return vlcPlayer.Time.ToString(@"hh\:mm\:ss") + " / " + vlcPlayer.Length.ToString(@"hh\:mm\:ss");
             }
         }
 
@@ -68,48 +81,41 @@ namespace WebTorrentX.ViewModels
         {
             InitializeComponent();
             DataContext = this;
-            vlcControl.MediaPlayer.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
-            vlcControl.MediaPlayer.TimeChanged += MediaPlayer_TimeChanged;
-            vlcControl.MediaPlayer.LengthChanged += MediaPlayer_LengthChanged;
-            vlcControl.MediaPlayer.Playing += MediaPlayer_Playing;
-            vlcControl.MediaPlayer.EndInit();
         }
 
-        private void MediaPlayer_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
-        {
-            int i = 0;
-        }
-
-        private void MediaPlayer_LengthChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerLengthChangedEventArgs e)
+        private void vlcPlayer_TimeChanged(object sender, EventArgs e)
         {
             OnPropertyChanged(nameof(Maximum));
-        }
-
-        private void MediaPlayer_TimeChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs e)
-        {
-            Progress = vlcControl.MediaPlayer.Time;
+            OnPropertyChanged(nameof(Progress));
             OnPropertyChanged(nameof(Time));
         }
 
-
-        private void OnVlcControlNeedsLibDirectory(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
+        private void vlcPlayer_StateChanged(object sender, Meta.Vlc.ObjectEventArgs<Meta.Vlc.Interop.Media.MediaState> e)
         {
-            var currentAssembly = Assembly.GetEntryAssembly();
-            var currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
-            if (currentDirectory == null)
-                return;
-            if (IntPtr.Size == 4)
-                e.VlcLibDirectory = new DirectoryInfo(Path.Combine(currentDirectory, @"libvlc\win-x86\"));
-            else
-                e.VlcLibDirectory = new DirectoryInfo(Path.Combine(currentDirectory, @"libvlc\win-x64\"));
+            if (e.Value == Meta.Vlc.Interop.Media.MediaState.Error)
+            {
+                string message = string.Format("Couldn't open file {0}", Application.Current.Properties["filename"].ToString());
+                MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
+                GoBack();
+            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             string filename = Application.Current.Properties["filename"].ToString();
-            bool b = vlcControl.MediaPlayer.VlcMediaPlayer.CouldPlay;
-            vlcControl.MediaPlayer.Play(new Uri(filename));
-            b = vlcControl.MediaPlayer.VlcMediaPlayer.CouldPlay;
+            try
+            {
+                
+                vlcPlayer.LoadMedia(filename);
+                vlcPlayer.Play();
+            }
+            catch
+            {
+                string message = string.Format("Couldn't open file {0}", Application.Current.Properties["filename"].ToString());
+                MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
+                GoBack();
+            }
+            
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -125,19 +131,18 @@ namespace WebTorrentX.ViewModels
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            vlcControl.MediaPlayer.Stop();
-            Progress = 0;
+            vlcPlayer.Stop();
             PlayPauseIcon.Icon = MaterialIconType.ic_play_arrow;
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            vlcControl.MediaPlayer.Stop();
+            vlcPlayer.Stop();
         }
 
         private void progressBar_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            vlcControl.MediaPlayer.Time = (long)(sender as Slider).Value;
+            vlcPlayer.Time = new TimeSpan(0, 0, (int)(sender as Slider).Value);
         }
 
         private void SoundSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -202,14 +207,14 @@ namespace WebTorrentX.ViewModels
 
         public void PlayPause()
         {
-            if (vlcControl.MediaPlayer.IsPlaying)
+            if (vlcPlayer.VlcMediaPlayer.IsPlaying)
             {
-                vlcControl.MediaPlayer.Pause();
+                vlcPlayer.Pause();
                 PlayPauseIcon.Icon = MaterialIconType.ic_play_arrow;
             }
             else
             {
-                vlcControl.MediaPlayer.Play();
+                vlcPlayer.Play();
                 PlayPauseIcon.Icon = MaterialIconType.ic_pause;
             }
         }
@@ -226,12 +231,19 @@ namespace WebTorrentX.ViewModels
 
         public void IncreaseSpeed()
         {
-            vlcControl.MediaPlayer.Rate ++;
+            vlcPlayer.Rate ++;
         }
 
         public void DecreaseSpeed()
         {
-            vlcControl.MediaPlayer.Rate --;
+            vlcPlayer.Rate --;
         }
+
+        public void LoadSubtitles(string path)
+        {
+            bool b = vlcPlayer.VlcMediaPlayer.SetSubtitleFile(path);
+            SubtitleEnabled = true;
+        }
+
     }
 }

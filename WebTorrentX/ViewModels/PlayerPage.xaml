@@ -4,7 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WebTorrentX.ViewModels"
-      xmlns:vlc="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      xmlns:meta="clr-namespace:Meta.Vlc.Wpf;assembly=Meta.Vlc.Wpf"
       xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -118,6 +119,13 @@
         
     </Page.Resources>
     <Grid>
+        <Grid.Resources>
+            <x:Array Type="{x:Type system:String}" x:Key="VlcOptions">
+                <system:String>--dummy-quiet</system:String>
+                <system:String>--ignore-config</system:String>
+                <system:String>--no-sub-autodetect-file</system:String>
+            </x:Array>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -127,7 +135,8 @@
         <Button Style="{StaticResource PlayerButtonStyle}" Margin="5" x:Name="BackButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackButton_Click">
             <mi:MaterialIcon Icon="ic_chevron_left"/>            
         </Button>
-        <vlc:VlcControl Grid.Row="1" x:Name="vlcControl" />
+
+        <meta:VlcPlayer x:Name="vlcPlayer" Grid.Row="1" LibVlcPath="LibVlc" VlcOption="{StaticResource VlcOptions}" TimeChanged="vlcPlayer_TimeChanged" StateChanged="vlcPlayer_StateChanged"/>
 
         <Slider Style="{StaticResource Horizontal_Slider}" x:Name="progressBar" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Minimum="0" Maximum="{Binding Maximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Thumb.DragCompleted="progressBar_DragCompleted"/>
         

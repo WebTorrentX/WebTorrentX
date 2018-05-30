@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using WebTorrentX.Controllers;
 using WebTorrentX.Models;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace WebTorrentX.ViewModels

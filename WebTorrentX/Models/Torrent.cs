@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ragnar;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace WebTorrentX.Models
 {
@@ -15,8 +16,9 @@ namespace WebTorrentX.Models
         private Session session;
         private TorrentHandle handle;
 
-        private readonly string fastResumeDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".resume");
-        private readonly string torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
+        private readonly string fastResumeDir;
+        private readonly string torrentDir;
+        private readonly string activeTorrentsFile;
 
         public string Name
         {
@@ -153,20 +155,27 @@ namespace WebTorrentX.Models
             }
         }
 
+        public string Url { get; set; } = string.Empty;
+        public string TorrentFileName { get; set; } = string.Empty;
+
         private Torrent(AddTorrentParams addParams, Session session)
         {
+            fastResumeDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".resume");
+            torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
+            activeTorrentsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".download");
             LoadTorrentState(ref addParams);
             handle = session.AddTorrent(addParams);
             handle.SequentialDownload = true;
             handle.AutoManaged = false;
             this.session = session;
+            Url = addParams.Url;
             active = true;
         }
 
         public static Torrent Create(AddTorrentParams addParams, Session session)
         {
 
-            Torrent torrent = new Torrent(addParams, session);            
+            Torrent torrent = new Torrent(addParams, session);   
             Task.Run(delegate
             {
                 while (torrent.active)
@@ -176,6 +185,35 @@ namespace WebTorrentX.Models
                 }
             });            
             return torrent;
+        }
+
+        public static Torrent CreateFromSavedData(dynamic torrent, Session session)
+        {
+            AddTorrentParams addParams = new AddTorrentParams
+            {
+                SavePath = torrent.Path
+            };
+            if (string.IsNullOrEmpty((string)torrent.TorrentFileName))
+            {
+                if (string.IsNullOrEmpty((string)torrent.Url))
+                {
+                    return null;
+                }
+                else
+                {
+                    addParams.Url = (string)torrent.Url;
+                }
+            }
+            else
+            {
+                if (File.Exists((string)torrent.TorrentFileName))
+                    addParams.TorrentInfo = new TorrentInfo((string)torrent.TorrentFileName);
+                else return null;
+            }
+            var result =  Create(addParams, session);
+            result.Url = (string)torrent.Url;
+            result.TorrentFileName = (string)torrent.TorrentFileName;
+            return result;
         }
 
         public void UpdateProperties()
@@ -239,6 +277,18 @@ namespace WebTorrentX.Models
         {
             active = false;
             SaveTorrentState();
+            dynamic torrent = new
+            {
+                Status = Status,
+                InfoHash = InfoHash.ToHex(),
+                Name = Name,
+                Path = DownloadPath,
+                Url = Url,
+                TorrentFileName = TorrentFileName
+            };
+            if (File.Exists(activeTorrentsFile))
+                File.AppendAllText(activeTorrentsFile, string.Concat(JsonConvert.SerializeObject(torrent), Environment.NewLine));
+            else File.WriteAllText(activeTorrentsFile, string.Concat(JsonConvert.SerializeObject(torrent), Environment.NewLine));
         }
 
         public void Remove()
@@ -247,9 +297,6 @@ namespace WebTorrentX.Models
             string torrent = Path.Combine(torrentDir, handle.QueryStatus().Name + ".torrent");
             if (File.Exists(torrent))
                 File.Delete(torrent);
-            string link = Path.Combine(torrentDir, handle.QueryStatus().Name + ".link");
-            if (File.Exists(link))
-                File.Delete(link);
             string fastResume = Path.Combine(fastResumeDir, handle.QueryStatus().Name + ".fastresume");
             if (File.Exists(fastResume))
                 File.Delete(fastResume);

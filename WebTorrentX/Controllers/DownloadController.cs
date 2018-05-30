@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Ragnar;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 using WebTorrentX.Models;
 
 namespace WebTorrentX.Controllers
@@ -14,7 +15,7 @@ namespace WebTorrentX.Controllers
         private const int maxPort = 2500;
         private readonly string sesStateFile;
         private readonly string torrentDir;
-        private readonly string linksFile;
+        private readonly string activeTorrentsFile;
 
 
         private Session session;
@@ -27,7 +28,7 @@ namespace WebTorrentX.Controllers
         {
             sesStateFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".ses_state");
             torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
-            linksFile = Path.Combine(torrentDir, "download.links");
+            activeTorrentsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".download");
             session = new Session();
             LoadSessionState();            
             Torrents = new ObservableCollection<Torrent>();
@@ -36,36 +37,16 @@ namespace WebTorrentX.Controllers
 
         private void LoadActiveTorrents()
         {
-            if (Directory.Exists(torrentDir))
+            if (File.Exists(activeTorrentsFile))
             {
-                var files = Directory.GetFiles(torrentDir);
-                foreach (var file in files)
+                var lines = File.ReadAllLines(activeTorrentsFile);
+                foreach (var line in lines)
                 {
-                    if (file.EndsWith(".torrent"))
-                    {
-                        var addParams = new AddTorrentParams
-                        {
-                            SavePath = Properties.Settings.Default.Location,
-                            TorrentInfo = new TorrentInfo(file)
-                        };
-                        var torrent = Torrent.Create(addParams, session);
+                    dynamic t = JsonConvert.DeserializeObject(line);
+                    Torrent torrent = Torrent.CreateFromSavedData(t, session);
+                    if (torrent != null)
                         Torrents.Add(torrent);
-                    }
                 }
-                if (File.Exists(linksFile))
-                {
-                    var links = File.ReadLines(linksFile);
-                    foreach (var link in links)
-                    {
-                        var addParams = new AddTorrentParams
-                        {
-                            SavePath = Properties.Settings.Default.Location,
-                            Url = link
-                        };
-                        var torrent = Torrent.Create(addParams, session);
-                        Torrents.Add(torrent);
-                    }
-                }                
             }
         }
 
@@ -101,9 +82,6 @@ namespace WebTorrentX.Controllers
                     if (result == null || result.Count() == 0)
                     {
                         Torrents.Add(torrent);
-                        if (File.Exists(linksFile))
-                            File.AppendAllText(linksFile, string.Concat(link, Environment.NewLine));
-                        else File.WriteAllText(linksFile, string.Concat(link, Environment.NewLine));
                     }
                     else
                     {
@@ -128,7 +106,8 @@ namespace WebTorrentX.Controllers
             try
             {
                 TorrentInfo info = new TorrentInfo(filename);
-                File.Copy(filename, Path.Combine(torrentDir, info.Name + ".torrent"), true);
+                string torrentFileName = Path.Combine(torrentDir, info.Name + ".torrent");
+                File.Copy(filename, torrentFileName, true);
                 var result = from t in Torrents where t.InfoHash.ToHex() == info.InfoHash select t;
                 if (result == null || result.Count() == 0)
                 {
@@ -138,6 +117,7 @@ namespace WebTorrentX.Controllers
                         TorrentInfo = info
                     };
                     var torrent = Torrent.Create(addParams, session);
+                    torrent.TorrentFileName = torrentFileName;
                     Torrents.Add(torrent);
                 }
                 else
@@ -153,6 +133,8 @@ namespace WebTorrentX.Controllers
 
         public void Dispose()
         {
+            if (File.Exists(activeTorrentsFile))
+                File.Delete(activeTorrentsFile);
             foreach (var torrent in Torrents)
                 torrent.Dispose();
             SaveSessionState();

@@ -126,7 +126,19 @@ namespace WebTorrentX
         private void DecreaseSpeed()
         {
             if (MainFrame.Content is PlayerPage)
-                (MainFrame.Content as PlayerPage).IncreaseSpeed();
+                (MainFrame.Content as PlayerPage).DecreaseSpeed();
+        }
+
+        private void AddSubtitle()
+        {
+            if (MainFrame.Content is PlayerPage)
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    (MainFrame.Content as PlayerPage).LoadSubtitles(openFileDialog.FileName);
+                }
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -238,7 +250,7 @@ namespace WebTorrentX
 
         private void AddSubtitlesButton_Click(object sender, RoutedEventArgs e)
         {
-
+            AddSubtitle();
         }
 
         private void PauseAllButton_Click(object sender, RoutedEventArgs e)

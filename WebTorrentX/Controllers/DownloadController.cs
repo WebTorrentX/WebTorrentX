@@ -12,8 +12,9 @@ namespace WebTorrentX.Controllers
 
         private const int minPort = 2000;
         private const int maxPort = 2500;
-        private readonly string sesStateFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".ses_state");
-        private readonly string torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
+        private readonly string sesStateFile;
+        private readonly string torrentDir;
+        private readonly string linksFile;
 
 
         private Session session;
@@ -24,6 +25,9 @@ namespace WebTorrentX.Controllers
 
         public DownloadController()
         {
+            sesStateFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".ses_state");
+            torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
+            linksFile = Path.Combine(torrentDir, "download.links");
             session = new Session();
             LoadSessionState();            
             Torrents = new ObservableCollection<Torrent>();
@@ -37,13 +41,31 @@ namespace WebTorrentX.Controllers
                 var files = Directory.GetFiles(torrentDir);
                 foreach (var file in files)
                 {
-                    var addParams = new AddTorrentParams
+                    if (file.EndsWith(".torrent"))
                     {
-                        TorrentInfo = new TorrentInfo(file)
-                    };
-                    var torrent = Torrent.Create(addParams, session);
-                    Torrents.Add(torrent);
+                        var addParams = new AddTorrentParams
+                        {
+                            SavePath = Properties.Settings.Default.Location,
+                            TorrentInfo = new TorrentInfo(file)
+                        };
+                        var torrent = Torrent.Create(addParams, session);
+                        Torrents.Add(torrent);
+                    }
                 }
+                if (File.Exists(linksFile))
+                {
+                    var links = File.ReadLines(linksFile);
+                    foreach (var link in links)
+                    {
+                        var addParams = new AddTorrentParams
+                        {
+                            SavePath = Properties.Settings.Default.Location,
+                            Url = link
+                        };
+                        var torrent = Torrent.Create(addParams, session);
+                        Torrents.Add(torrent);
+                    }
+                }                
             }
         }
 
@@ -61,6 +83,44 @@ namespace WebTorrentX.Controllers
             if (Torrents.Count > 0) File.WriteAllBytes(sesStateFile, session.SaveState());               
         }
 
+        public void LoadMagnet(string link)
+        {
+            if (!Directory.Exists(torrentDir))
+                Directory.CreateDirectory(torrentDir);
+            try
+            {
+                if (link.StartsWith(@"magnet:?xt=urn:btih:") || link.StartsWith(@"http://") || link.StartsWith(@"https://"))
+                {
+                    var addParams = new AddTorrentParams
+                    {
+                        SavePath = Properties.Settings.Default.Location,
+                        Url = link
+                    };
+                    var torrent = Torrent.Create(addParams, session);
+                    var result = from t in Torrents where t.InfoHash.ToHex() == torrent.InfoHash.ToHex() select t;
+                    if (result == null || result.Count() == 0)
+                    {
+                        Torrents.Add(torrent);
+                        if (File.Exists(linksFile))
+                            File.AppendAllText(linksFile, string.Concat(link, Environment.NewLine));
+                        else File.WriteAllText(linksFile, string.Concat(link, Environment.NewLine));
+                    }
+                    else
+                    {
+                        Error?.Invoke(this, "This torrent already exists");
+                    }
+                }
+                else
+                {
+                    Error?.Invoke(this, "Wrong link");
+                }
+            }
+            catch
+            {
+                Error?.Invoke(this, "Error opening magnet link!");
+            }
+        }
+
         public void LoadTorrent(string filename)
         {
             if (!Directory.Exists(torrentDir))
@@ -75,9 +135,8 @@ namespace WebTorrentX.Controllers
                     var addParams = new AddTorrentParams
                     {
                         SavePath = Properties.Settings.Default.Location,
-                        TorrentInfo = new TorrentInfo(filename)
+                        TorrentInfo = info
                     };
-                    addParams.TorrentInfo = new TorrentInfo(filename);
                     var torrent = Torrent.Create(addParams, session);
                     Torrents.Add(torrent);
                 }

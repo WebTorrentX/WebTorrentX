@@ -45,7 +45,7 @@ namespace WebTorrentX
         public MainWindow()
         {
             InitializeComponent();
-            if (Properties.Settings.Default.Location == string.Empty)
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Location))
             {
                 Properties.Settings.Default.Location = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
                 Properties.Settings.Default.Save();
@@ -65,6 +65,20 @@ namespace WebTorrentX
                 }
             }
                 
+        }
+
+        private void OpenAddress()
+        {
+            if (MainFrame.Content is DownloadPage)
+            {
+                InputDialog dialog = new InputDialog();
+                dialog.Message = "Enter torrent address or magnet link";
+                if (dialog.ShowDialog() == true)
+                {
+                    App.downloadController.LoadMagnet(dialog.Value);
+                }
+
+            }
         }
 
         private void Fullscreen()
@@ -103,6 +117,18 @@ namespace WebTorrentX
                 (MainFrame.Content as PlayerPage).DecreaseVolume();
         }
 
+        private void IncreaseSpeed()
+        {
+            if (MainFrame.Content is PlayerPage)
+                (MainFrame.Content as PlayerPage).IncreaseSpeed();
+        }
+
+        private void DecreaseSpeed()
+        {
+            if (MainFrame.Content is PlayerPage)
+                (MainFrame.Content as PlayerPage).IncreaseSpeed();
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {            
             App.downloadController.Dispose();
@@ -118,6 +144,7 @@ namespace WebTorrentX
                         OpenTorrent();
                         break;
                     case Key.U:
+                        OpenAddress();
                         break;
                     case Key.W:
                         Close();
@@ -127,6 +154,12 @@ namespace WebTorrentX
                         break;
                     case Key.Down:
                         DecreaseVolume();
+                        break;
+                    case Key.Left:
+                        DecreaseSpeed();
+                        break;
+                    case Key.Right:
+                        IncreaseSpeed();
                         break;
                     default: break;
                 }
@@ -151,6 +184,12 @@ namespace WebTorrentX
             OpenTorrent();
         }
 
+
+        private void OpenAddressButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAddress();
+        }
+        
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -189,12 +228,12 @@ namespace WebTorrentX
 
         private void IncreaseSpeedButton_Click(object sender, RoutedEventArgs e)
         {
-
+            IncreaseSpeed();
         }
 
         private void DecreaseSpeedButton_Click(object sender, RoutedEventArgs e)
         {
-
+            DecreaseSpeed();
         }
 
         private void AddSubtitlesButton_Click(object sender, RoutedEventArgs e)
@@ -220,5 +259,6 @@ namespace WebTorrentX
             OnPropertyChanged(nameof(IsPlayerPage));
             OnPropertyChanged(nameof(CanGoBack));
         }
+
     }
 }

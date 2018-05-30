@@ -122,7 +122,7 @@
         <Menu Grid.Row="0" Style="{StaticResource MenuStyle}">
             <MenuItem Header="File">
                 <MenuItem x:Name="OpenButton" InputGestureText="Ctrl+O" Header="Open Torrent File..." Click="OpenButton_Click"/>
-                <MenuItem x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open Torrent Address..."/>
+                <MenuItem x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open Torrent Address..." Click="OpenAddressButton_Click"/>
                 <Separator Margin="0,5,0,5"/>
                 <MenuItem Header="Preferences" x:Name="PreferencesButton" Click="PreferencesButton_Click"/>
                 <Separator Margin="0,5,0,5"/>
@@ -142,8 +142,8 @@
                 <MenuItem x:Name="IncreaseVolumeButton" Header="Increase Volume" InputGestureText="Ctrl + Up Arrow" Click="IncreaseVolumeButton_Click"/>
                 <MenuItem x:Name="DecreaseVolumeButton" Header="Decrease Volume" InputGestureText="Ctrl + Down Arrow" Click="DecreaseVolumeButton_Click"/>
                 <Separator Margin="0,5,0,5"/>
-                <MenuItem x:Name="IncreaseSpeedButton" Header="Increase Speed" InputGestureText="Ctrl + =" Click="IncreaseSpeedButton_Click"/>
-                <MenuItem x:Name="DecreaseSpeedButton" Header="Decrease Speed" InputGestureText="Ctrl + -" Click="DecreaseSpeedButton_Click"/>
+                <MenuItem x:Name="IncreaseSpeedButton" Header="Increase Speed" InputGestureText="Ctrl + Right Arrow" Click="IncreaseSpeedButton_Click"/>
+                <MenuItem x:Name="DecreaseSpeedButton" Header="Decrease Speed" InputGestureText="Ctrl + Left Arrow" Click="DecreaseSpeedButton_Click"/>
                 <Separator Margin="0,5,0,5"/>
                 <MenuItem x:Name="AddSubtitlesButton" Header="Add Subtitles File" Click="AddSubtitlesButton_Click"/>
             </MenuItem>

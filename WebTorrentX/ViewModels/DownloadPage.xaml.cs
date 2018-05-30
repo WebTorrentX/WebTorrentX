@@ -1,9 +1,13 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using WebTorrentX.Controllers;
 using WebTorrentX.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace WebTorrentX.ViewModels
 {
@@ -11,7 +15,7 @@ namespace WebTorrentX.ViewModels
     public sealed partial class DownloadPage : Page
     {
 
-        private FileSystemWatcher watcher;
+        private FileSystemWatcher watcher;        
 
         internal ObservableCollection<Torrent> TorrentSource
         {
@@ -55,7 +59,7 @@ namespace WebTorrentX.ViewModels
             {
                 App.downloadController.LoadTorrent(e.FullPath);
             });
-        }
+        }        
 
         public void LoadTorrent(string filename)
         {
@@ -92,7 +96,23 @@ namespace WebTorrentX.ViewModels
         {
             if ((sender as Button).Tag is Torrent)
             {
-                Application.Current.Properties["filename"] = Path.Combine(((sender as Button).Tag as Torrent).DownloadPath, ((sender as Button).Tag as Torrent).Name);
+                string path = Path.Combine(((sender as Button).Tag as Torrent).DownloadPath, ((sender as Button).Tag as Torrent).Name);
+                if (Directory.Exists(path))
+                {
+                    string[] extensions = { ".mkv", ".flv", ".f4p", ".f4a", ".f4v", "f4b", ".avi", ".wmv", ".mp4", ".m4p", ".m4v", ".mpg", ".mpeg", ".m2v", ".3gp" };
+                    foreach (string file in Directory.GetFiles(path))
+                    {
+                        if (extensions.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase))
+                        {
+                            Application.Current.Properties["filename"] = file;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Application.Current.Properties["filename"] = Path.Combine(((sender as Button).Tag as Torrent).DownloadPath, ((sender as Button).Tag as Torrent).Name);
+                }
                 NavigationService.Navigate(new PlayerPage());
             }                
         }
@@ -107,5 +127,16 @@ namespace WebTorrentX.ViewModels
             }
         }
 
+        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as Button).Tag is Torrent)
+            {
+                var torrent = (sender as Button).Tag as Torrent;
+                if (Directory.Exists(torrent.DownloadPath))
+                {
+                    Process.Start("explorer.exe", torrent.DownloadPath);
+                }
+            }
+        }
     }
 }

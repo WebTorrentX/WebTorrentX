@@ -71,7 +71,13 @@ namespace WebTorrentX.ViewModels
             vlcControl.MediaPlayer.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
             vlcControl.MediaPlayer.TimeChanged += MediaPlayer_TimeChanged;
             vlcControl.MediaPlayer.LengthChanged += MediaPlayer_LengthChanged;
+            vlcControl.MediaPlayer.Playing += MediaPlayer_Playing;
             vlcControl.MediaPlayer.EndInit();
+        }
+
+        private void MediaPlayer_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
+        {
+            int i = 0;
         }
 
         private void MediaPlayer_LengthChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerLengthChangedEventArgs e)
@@ -101,7 +107,9 @@ namespace WebTorrentX.ViewModels
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             string filename = Application.Current.Properties["filename"].ToString();
+            bool b = vlcControl.MediaPlayer.VlcMediaPlayer.CouldPlay;
             vlcControl.MediaPlayer.Play(new Uri(filename));
+            b = vlcControl.MediaPlayer.VlcMediaPlayer.CouldPlay;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -214,6 +222,16 @@ namespace WebTorrentX.ViewModels
         public void DecreaseVolume()
         {
             Volume--;
+        }
+
+        public void IncreaseSpeed()
+        {
+            vlcControl.MediaPlayer.Rate ++;
+        }
+
+        public void DecreaseSpeed()
+        {
+            vlcControl.MediaPlayer.Rate --;
         }
     }
 }

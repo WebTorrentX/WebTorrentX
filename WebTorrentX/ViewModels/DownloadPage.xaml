@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WebTorrentX.ViewModels"
+      xmlns:models="clr-namespace:WebTorrentX.Models"
       xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -103,6 +104,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -135,6 +137,10 @@
                     <Button Style="{StaticResource RemoveButtonStyle}" Tag="{Binding}"
                             x:Name="RemoveTorrentButton" Click="RemoveTorrentButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
                         <mi:MaterialIcon Icon="ic_delete"/>
+                    </Button>
+                    <Button Style="{StaticResource RemoveButtonStyle}" Tag="{Binding}"
+                            x:Name="OpenFolderButton" Click="OpenFolderButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
+                        <mi:MaterialIcon Icon="ic_folder_open"/>
                     </Button>
                 </StackPanel>
             </Grid>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Ragnar;
+using Newtonsoft.Json;
 
 namespace WebTorrentX.Models
 {
@@ -14,21 +15,16 @@ namespace WebTorrentX.Models
         private Session session;
         private TorrentHandle handle;
 
-
         private readonly string fastResumeDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".resume");
         private readonly string torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
 
-        private string name = string.Empty;
         public string Name
         {
-            get { return name; }
-            private set
+            get
             {
-                if (name != value)
-                {
-                    name = value;
-                    OnPropertyChanged(nameof(Name));
-                }                
+                if (handle != null)
+                    return handle.QueryStatus().Name;
+                else return string.Empty;
             }
         }
 
@@ -164,7 +160,6 @@ namespace WebTorrentX.Models
             handle.SequentialDownload = true;
             handle.AutoManaged = false;
             this.session = session;
-            name = handle.QueryStatus().Name;
             active = true;
         }
 
@@ -186,6 +181,7 @@ namespace WebTorrentX.Models
         public void UpdateProperties()
         {
             GetHashCode();
+            OnPropertyChanged(nameof(Name));
             OnPropertyChanged(nameof(Speed));
             OnPropertyChanged(nameof(TimeRemaining));
             OnPropertyChanged(nameof(Peers));
@@ -214,7 +210,7 @@ namespace WebTorrentX.Models
                 while (!savedFastResume)
                 {
                     var alerts = session.Alerts.PopAll();
-                    if (alerts == null || !alerts.Any()) continue;
+                    if (alerts == null || !alerts.Any()) break;
                     foreach (var alert in alerts)
                     {
                         if (alert is SaveResumeDataAlert)
@@ -230,7 +226,7 @@ namespace WebTorrentX.Models
                         }
                     }
                 }
-            }
+            }            
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -248,10 +244,13 @@ namespace WebTorrentX.Models
         public void Remove()
         {
             active = false;
-            string torrent = Path.Combine(torrentDir, handle.TorrentFile.Name + ".torrent");
+            string torrent = Path.Combine(torrentDir, handle.QueryStatus().Name + ".torrent");
             if (File.Exists(torrent))
                 File.Delete(torrent);
-            string fastResume = Path.Combine(fastResumeDir, handle.TorrentFile.Name + ".fastresume");
+            string link = Path.Combine(torrentDir, handle.QueryStatus().Name + ".link");
+            if (File.Exists(link))
+                File.Delete(link);
+            string fastResume = Path.Combine(fastResumeDir, handle.QueryStatus().Name + ".fastresume");
             if (File.Exists(fastResume))
                 File.Delete(fastResume);
         }

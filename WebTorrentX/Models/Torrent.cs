@@ -218,15 +218,17 @@ namespace WebTorrentX.Models
 
         public void UpdateProperties()
         {
+            var tmp = handle.QueryStatus();
             GetHashCode();
             OnPropertyChanged(nameof(Name));
-            OnPropertyChanged(nameof(Speed));
-            OnPropertyChanged(nameof(TimeRemaining));
-            OnPropertyChanged(nameof(Peers));
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(IsDownloading));
+            OnPropertyChanged(nameof(Size));
             OnPropertyChanged(nameof(Done));
             OnPropertyChanged(nameof(Progress));
+            OnPropertyChanged(nameof(Peers));
+            OnPropertyChanged(nameof(Speed));
+            OnPropertyChanged(nameof(TimeRemaining));
+            OnPropertyChanged(nameof(IsDownloading));            
+            OnPropertyChanged(nameof(Status));
         }
 
         private void LoadTorrentState(ref AddTorrentParams p)

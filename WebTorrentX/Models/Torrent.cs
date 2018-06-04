@@ -155,6 +155,24 @@ namespace WebTorrentX.Models
             }
         }
 
+        public List<Tuple<FileInfo, long>> FilesInfo
+        {
+            get
+            {
+                List<Tuple<FileInfo, long>> list = new List<Tuple<FileInfo, long>>();
+                if (handle.TorrentFile != null)
+                {                    
+                    for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
+                    {
+                        var g = handle.TorrentFile.FileAt(i);
+                        FileInfo info = new FileInfo(Path.Combine(DownloadPath, g.Path));
+                        list.Add(new Tuple<FileInfo, long> (info, g.Size));
+                    }                    
+                }                    
+                return list;
+            }
+        }
+
         public string Url { get; set; } = string.Empty;
         public string TorrentFileName { get; set; } = string.Empty;
 
@@ -167,6 +185,7 @@ namespace WebTorrentX.Models
             handle = session.AddTorrent(addParams);
             handle.SequentialDownload = true;
             handle.AutoManaged = false;
+            handle.FlushCache();
             this.session = session;
             Url = addParams.Url;
             active = true;
@@ -218,8 +237,6 @@ namespace WebTorrentX.Models
 
         public void UpdateProperties()
         {
-            var tmp = handle.QueryStatus();
-            GetHashCode();
             OnPropertyChanged(nameof(Name));
             OnPropertyChanged(nameof(Size));
             OnPropertyChanged(nameof(Done));

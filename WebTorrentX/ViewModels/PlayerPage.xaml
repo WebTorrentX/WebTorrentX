@@ -93,7 +93,7 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="RepeatButton">
-                                                <ProgressBar Height="3" BorderThickness="0" Background="Black" Foreground="IndianRed" Minimum="0" Maximum="100" Value="{Binding DownloadProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Border SnapsToDevicePixels="True" Background="Black"  BorderThickness="1" BorderBrush="Black" Height="3"/>
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>
@@ -122,7 +122,10 @@
     <Grid>
         <Grid.Resources>
             <x:Array Type="{x:Type system:String}" x:Key="VlcOptions">
+                <system:String>-I</system:String>
                 <system:String>--dummy-quiet</system:String>
+                <system:String>--ignore-config</system:String>
+                <system:String>--no-video-title</system:String>
                 <system:String>--no-sub-autodetect-file</system:String>
             </x:Array>
         </Grid.Resources>
@@ -136,18 +139,18 @@
             <mi:MaterialIcon Icon="ic_chevron_left"/>            
         </Button>
 
-        <meta:VlcPlayer x:Name="Player" Grid.Row="1" LibVlcPath="LibVlc" 
-                        TimeChanged="Player_TimeChanged" 
+        <meta:VlcPlayer x:Name="Player" Grid.Row="1" LibVlcPath="LibVlc"
+                        VlcOption="{StaticResource VlcOptions}"
                         StateChanged="Player_StateChanged"/>
         
         <StackPanel Visibility="{Binding Loading, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <fa:ImageAwesome Icon="Spinner" Spin="True" Height="32" Width="32" Foreground="LightGray" />
             <TextBlock Text="Loading..." Foreground="LightGray" Margin="0, 5, 0, 0"/>
         </StackPanel>
-        
-        
 
+        <ProgressBar Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="3" BorderThickness="0" Background="Black" Foreground="IndianRed" Minimum="0" Maximum="100" Value="{Binding Buffering, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
         <Slider Style="{StaticResource Horizontal_Slider}" x:Name="progressBar" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Minimum="0" Maximum="{Binding Maximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Thumb.DragCompleted="progressBar_DragCompleted"/>
+
         
         <DockPanel Grid.Row="3" Margin="0" LastChildFill="False">
             <Button DockPanel.Dock="Left" Style="{StaticResource PlayerButtonStyle}" x:Name="PlayPauseButton" Click="PlayPauseButton_Click" Margin="10,0,5,0">

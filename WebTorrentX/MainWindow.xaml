@@ -150,7 +150,14 @@
             <MenuItem Header="Transfers" IsEnabled="{Binding IsDownloadPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <MenuItem x:Name="PauseAllButton" Header="Pause All" Click="PauseAllButton_Click"/>
                 <MenuItem x:Name="ResumeAllButton" Header="Resume All" Click="ResumeAllButton_Click"/>
-            </MenuItem>            
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem x:Name="ContributeButton" Header="Contribute on GitHub" Click="ContributeButton_Click"/>
+                <Separator Margin="0,5,0,5"/>
+                <MenuItem x:Name="ReportButton" Header="Report an issue" Click="ReportButton_Click"/>
+                <Separator Margin="0,5,0,5"/>
+                <MenuItem x:Name="AboutButton" Header="About WebTorrentX" Click="AboutButton_Click"/>
+            </MenuItem> 
         </Menu>
         <Frame Grid.Row="1" x:Name="MainFrame" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated"/>
     </Grid>

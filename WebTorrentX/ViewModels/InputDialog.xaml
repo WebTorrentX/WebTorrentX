@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebTorrentX.ViewModels"
         mc:Ignorable="d" Title="WebTorrentX"  Width="300" MinWidth="300" MaxWidth="500" Height="150" MinHeight="150" MaxHeight="150"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <StackPanel>
         <TextBlock Text="{Binding Message, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="10"/>
         <TextBox x:Name="LinkTextBox" Margin="10" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Focusable="True" />

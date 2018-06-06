@@ -72,6 +72,7 @@ namespace WebTorrentX
             if (MainFrame.Content is DownloadPage)
             {
                 InputDialog dialog = new InputDialog();
+                dialog.Owner = this;
                 dialog.Message = "Enter torrent address or magnet link";
                 if (dialog.ShowDialog() == true)
                 {
@@ -272,5 +273,21 @@ namespace WebTorrentX
             OnPropertyChanged(nameof(CanGoBack));
         }
 
+        private void ContributeButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://github.com/WebTorrentX/WebTorrentX/");
+        }
+
+        private void ReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://github.com/WebTorrentX/WebTorrentX/issues");
+        }
+
+        private void AboutButton_Click(object sender, RoutedEventArgs e)
+        {
+            AboutWindow about = new AboutWindow();
+            about.Owner = this;
+            about.ShowDialog();
+        }
     }
 }

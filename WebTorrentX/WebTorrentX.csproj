@@ -106,6 +106,9 @@
     </ApplicationDefinition>
     <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Models\Torrent.cs" />
+    <Compile Include="ViewModels\AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\DownloadPage.xaml.cs">
       <DependentUpon>DownloadPage.xaml</DependentUpon>
     </Compile>
@@ -132,6 +135,10 @@
       <SubType>Code</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Page Include="ViewModels\AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ViewModels\DownloadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -190,7 +197,9 @@
     <Content Include="boost_thread-vc120-mt-1_55.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="icon.ico" />
+    <Content Include="icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="LibVlc\libvlc.dll" />
     <Content Include="LibVlc\libvlccore.dll" />
     <Content Include="LibVlc\plugins\access\libaccess_bd_plugin.dll" />

@@ -6,7 +6,6 @@
       xmlns:local="clr-namespace:WebTorrentX.ViewModels"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       xmlns:meta="clr-namespace:Meta.Vlc.Wpf;assembly=Meta.Vlc.Wpf"
-      xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
       xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -14,8 +13,7 @@
       Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.Resources>
         <Style x:Key="PlayerButtonStyle" TargetType="{x:Type Button}">
-            <Setter Property="Foreground" Value="LightGray"/>
-            <Setter Property="Width" Value="20"/>
+            <Setter Property="Foreground" Value="LightGray"/>            
             <Setter Property="Height" Value="20"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -136,7 +134,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Button Style="{StaticResource PlayerButtonStyle}" Margin="5" x:Name="BackButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackButton_Click">
-            <mi:MaterialIcon Icon="ic_chevron_left"/>            
+            <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="ChevronLeft" />           
         </Button>
 
         <meta:VlcPlayer x:Name="Player" Grid.Row="1" LibVlcPath="LibVlc"
@@ -154,13 +152,13 @@
         
         <DockPanel Grid.Row="3" Margin="0" LastChildFill="False">
             <Button DockPanel.Dock="Left" Style="{StaticResource PlayerButtonStyle}" x:Name="PlayPauseButton" Click="PlayPauseButton_Click" Margin="10,0,5,0">
-                <mi:MaterialIcon Icon="ic_pause" x:Name="PlayPauseIcon"/>
+                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Pause" x:Name="PlayPauseIcon"/>
             </Button>
             <Button DockPanel.Dock="Left" Style="{StaticResource PlayerButtonStyle}" x:Name="StopButton" Click="StopButton_Click" Margin="0,0,5,0">
-                <mi:MaterialIcon Icon="ic_stop"/>
+                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Stop" />
             </Button>
             <Button DockPanel.Dock="Left" Style="{StaticResource PlayerButtonStyle}" x:Name="SoundButton" Click="SoundButton_Click" Margin="0,0,5,0">
-                <mi:MaterialIcon x:Name="VolumeIcon" Icon="ic_volume_up"/>
+                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="VolumeUp" x:Name="VolumeIcon"/>
             </Button>
             <Slider DockPanel.Dock="Left" x:Name="SoundSlider" Thumb.DragCompleted="SoundSlider_DragCompleted" 
                     Style="{StaticResource Horizontal_Slider}" Width="100" Margin="0,0,5,0"
@@ -170,7 +168,7 @@
                        VerticalAlignment="Center" Foreground="LightGray"/>
             <Button DockPanel.Dock="Right" Style="{StaticResource PlayerButtonStyle}" x:Name="FullScreenButton" 
                     Margin="0,0,10,0" Click="FullScreenButton_Click">
-                <mi:MaterialIcon x:Name="FullscreenIcon" Icon="ic_fullscreen"/>
+                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="ArrowsAlt"/>
             </Button>
         </DockPanel>        
     </Grid>

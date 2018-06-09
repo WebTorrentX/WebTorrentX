@@ -3,9 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:WebTorrentX.ViewModels"
-      xmlns:models="clr-namespace:WebTorrentX.Models"
-      xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
+      xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="WebTorrentX - Download"
@@ -20,8 +18,9 @@
         <Style TargetType="{x:Type ListView}" x:Key="ListViewStyle">
             <Setter Property="Background" Value="#1e1e1e"/>
             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
             <Setter Property="ItemContainerStyle">
-                <Setter.Value>
+                <Setter.Value>                    
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -34,19 +33,20 @@
                                 </LinearGradientBrush>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="Focusable" Value="False"/>
                     </Style>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <Style x:Key="RemoveButtonStyle" TargetType="{x:Type Button}">
+        <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Foreground" Value="LightGray"/>
-            <Setter Property="Width" Value="40"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border CornerRadius="20" BorderBrush="LightGray" BorderThickness="0" Background="Transparent">
+                        <Border BorderBrush="LightGray" BorderThickness="0" Background="Transparent">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>
@@ -64,40 +64,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <Style x:Key="PlayButtonStyle" TargetType="{x:Type Button}">
-            <Setter Property="Foreground" Value="LightGray"/>
-            <Setter Property="Width" Value="40"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" CornerRadius="20" BorderBrush="LightGray" BorderThickness="4" Background="Transparent">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="BorderBrush" TargetName="border" Value="LightGray"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" TargetName="border" Value="White"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>                    
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Foreground" Value="LightGray"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.25"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>  
 
         <DataTemplate x:Key="TorrentListItemTemplate">
             <Grid HorizontalAlignment="Stretch">
@@ -130,19 +96,66 @@
                     <TextBlock Text="{Binding TimeRemaining, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </WrapPanel>
                 <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
-                    <Button Style="{StaticResource PlayButtonStyle}" Tag="{Binding}"
+                    <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
                             x:Name="PlayButton" Click="PlayButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
-                        <mi:MaterialIcon Icon="ic_play_arrow" />
+                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Play" />
                     </Button>
-                    <Button Style="{StaticResource RemoveButtonStyle}" Tag="{Binding}"
+                    <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
                             x:Name="RemoveTorrentButton" Click="RemoveTorrentButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
-                        <mi:MaterialIcon Icon="ic_delete"/>
+                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Trash" />
                     </Button>
-                    <Button Style="{StaticResource RemoveButtonStyle}" Tag="{Binding}"
+                    <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
                             x:Name="OpenFolderButton" Click="OpenFolderButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
-                        <mi:MaterialIcon Icon="ic_folder_open"/>
+                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Folder" />
                     </Button>
                 </StackPanel>
+                <Expander Header="Files" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="10">
+                    <ListView Height="Auto" MaxHeight="200"
+                          ItemsSource="{Binding Files, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ListView.Style>
+                            <Style TargetType="{x:Type ListView}">                                
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                                <Setter Property="ItemContainerStyle">
+                                    <Setter.Value>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                                        <Border>
+                                                            <ContentPresenter  />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="Focusable" Value="False"/>
+                                        </Style>
+                                    </Setter.Value>
+                                </Setter>                                
+                            </Style>
+                        </ListView.Style>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel LastChildFill="False" Margin="0">
+                                    <Button Style="{StaticResource ButtonStyle}"
+                                        DockPanel.Dock="Left" Width="20" Height="20" Margin="5">
+                                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Play" />
+                                    </Button>
+                                    <TextBlock Text="{Binding}" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource ButtonStyle}"
+                                        Width="15" Height="15" Margin="5">
+                                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Remove" />
+                                    </Button>
+                                    <TextBlock DockPanel.Dock="Right" Text="500 MB" Margin="5" VerticalAlignment="Center"/>
+                                    <TextBlock DockPanel.Dock="Right" Text="0%" Margin="5" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Expander>
+                
             </Grid>
         </DataTemplate>        
     </Page.Resources>
@@ -155,7 +168,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ListView x:Name="TorrentListView" Margin="0" Grid.Row="1" 
+        <ListView x:Name="TorrentListView" Margin="0" Grid.Row="1"
                   ItemTemplate="{StaticResource TorrentListItemTemplate}"
                   Style="{StaticResource ListViewStyle}" Drop="TorrentListView_Drop" AllowDrop="True">
         </ListView>

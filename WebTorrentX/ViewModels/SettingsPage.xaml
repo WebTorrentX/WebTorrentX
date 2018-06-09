@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:mi="clr-namespace:MaterialIcons;assembly=MaterialIcons"
+      xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SettingsPage">
@@ -37,7 +37,7 @@
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal">
             <Button Style="{StaticResource ButtonStyle}" Margin="5" x:Name="BackButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackButton_Click">
-                <mi:MaterialIcon Icon="ic_chevron_left"/>
+                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="ChevronLeft" Height="20"/>
             </Button>
         </StackPanel>
         <DockPanel Margin="10" LastChildFill="True">

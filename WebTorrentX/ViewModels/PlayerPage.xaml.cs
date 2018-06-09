@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Threading;
-using MaterialIcons;
+using FontAwesome;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using WebTorrentX.Models;
@@ -107,10 +107,10 @@ namespace WebTorrentX.ViewModels
                 if (value < 0 || value > 100) return;
                 Player.Volume = value;
                 if (Player.Volume == 0)
-                    VolumeIcon.Icon = MaterialIconType.ic_volume_mute;
+                    VolumeIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.VolumeOff;
                 else if (Player.Volume > 0 && Player.Volume < 50)
-                    VolumeIcon.Icon = MaterialIconType.ic_volume_down;
-                else VolumeIcon.Icon = MaterialIconType.ic_volume_up;
+                    VolumeIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.VolumeDown;
+                else VolumeIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.VolumeUp;
                 OnPropertyChanged(nameof(Volume));
             }
         }
@@ -132,9 +132,9 @@ namespace WebTorrentX.ViewModels
             {
                 if (torrent != null)
                 {
-                    double buffer = 0;
-                    buffer = torrent.FilesInfo[fileindex].Item1.Length * 100 / torrent.FilesInfo[fileindex].Item2;
-                    return buffer;
+                    //double buffer = 0;
+                    //buffer = torrent.FilesInfo[fileindex].Item1.Length * 100 / torrent.FilesInfo[fileindex].Item2;
+                    return torrent.FileDownloadedPercent.ElementAt(fileindex);
                 }
                 else return 0;
             }
@@ -158,9 +158,9 @@ namespace WebTorrentX.ViewModels
             torrent = Application.Current.Properties["torrent"] as Torrent;
             if (torrent != null)
             {
-                if (torrent.FilesInfo.Count == 1)
+                if (torrent.Files.Count() == 1)
                 {
-                    filename = torrent.FilesInfo[0].Item1.FullName;
+                    filename = Path.Combine(torrent.DownloadPath, torrent.Files.ElementAt(0));
                     fileindex = 0;
                     try
                     {
@@ -192,11 +192,12 @@ namespace WebTorrentX.ViewModels
                         {
                             if (extensions.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase))
                             {
-                                for (int i = 0; i < torrent.FilesInfo.Count; i++)
+                                for (int i = 0; i < torrent.Files.Count(); i++)
                                 {
-                                    if (torrent.FilesInfo[i].Item1.FullName.Equals(file))
+                                    string name = Path.Combine(torrent.DownloadPath, torrent.Files.ElementAt(i));
+                                    if (name.Equals(file))
                                     {
-                                        filename = torrent.FilesInfo[i].Item1.FullName;
+                                        filename = name;
                                         fileindex = i;
                                         try
                                         {
@@ -361,7 +362,6 @@ namespace WebTorrentX.ViewModels
                 {
                     Window.GetWindow(this).WindowState = WindowState.Normal;
                     Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
-                    FullscreenIcon.Icon = MaterialIconType.ic_fullscreen;
                 }
                 NavigationService.GoBack();
             }                
@@ -378,13 +378,11 @@ namespace WebTorrentX.ViewModels
             {
                 Window.GetWindow(this).WindowStyle = WindowStyle.None;
                 Window.GetWindow(this).WindowState = WindowState.Maximized;
-                FullscreenIcon.Icon = MaterialIconType.ic_fullscreen_exit;
             }
             else
             {
                 Window.GetWindow(this).WindowState = WindowState.Normal;
                 Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
-                FullscreenIcon.Icon = MaterialIconType.ic_fullscreen;
             }
         }
 
@@ -396,7 +394,7 @@ namespace WebTorrentX.ViewModels
         private void Stop()
         {
             Player.Stop();
-            PlayPauseIcon.Icon = MaterialIconType.ic_play_arrow;
+            PlayPauseIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Play;
         }
 
         public void PlayPause()
@@ -417,13 +415,13 @@ namespace WebTorrentX.ViewModels
         private void Play()
         {
             Player.Play();
-            PlayPauseIcon.Icon = MaterialIconType.ic_pause;
+            PlayPauseIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Pause;
         }
 
         private void Pause()
         {
             Player.Pause();
-            PlayPauseIcon.Icon = MaterialIconType.ic_play_arrow;
+            PlayPauseIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Play;
         }
 
         public void IncreaseVolume()

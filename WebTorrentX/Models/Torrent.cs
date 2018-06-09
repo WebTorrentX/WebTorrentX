@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Ragnar;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace WebTorrentX.Models
 {
@@ -155,22 +156,54 @@ namespace WebTorrentX.Models
             }
         }
 
-        public List<Tuple<FileInfo, long>> FilesInfo
+        public IEnumerable<string> Files
         {
             get
             {
-                List<Tuple<FileInfo, long>> list = new List<Tuple<FileInfo, long>>();
                 if (handle.TorrentFile != null)
-                {                    
+                {
                     for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
                     {
-                        var g = handle.TorrentFile.FileAt(i);
-                        FileInfo info = new FileInfo(Path.Combine(DownloadPath, g.Path));
-                        list.Add(new Tuple<FileInfo, long> (info, g.Size));
-                    }                    
-                }                    
-                return list;
+                        yield return handle.TorrentFile.FileAt(i).Path;
+                    }
+                }
+                else yield return null;
             }
+        }
+
+        public IEnumerable<double> FileDownloadedPercent
+        {
+            get
+            {
+                if (handle.TorrentFile != null)
+                {
+                    for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
+                    {
+                        var file = handle.TorrentFile.FileAt(i);
+                        FileInfo info = new FileInfo(Path.Combine(DownloadPath, file.Path));
+                        yield return info.Length * 100 / file.Size;
+                    }
+                }
+                else yield return 0;
+            }
+        }
+
+        public IEnumerable<double> FileDownloadedBytes
+        {
+            get
+            {
+                if (handle.TorrentFile != null)
+                {
+                    for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
+                    {
+                        var file = handle.TorrentFile.FileAt(i);
+                        FileInfo info = new FileInfo(Path.Combine(DownloadPath, file.Path));
+                        yield return info.Length;
+                    }
+                }
+                else yield return 0;
+            }
+
         }
 
         public string Url { get; set; } = string.Empty;

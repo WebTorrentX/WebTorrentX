@@ -103,6 +103,7 @@
     </ApplicationDefinition>
     <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Models\Torrent.cs" />
+    <Compile Include="Models\TorrentFileInfo.cs" />
     <Compile Include="ViewModels\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>

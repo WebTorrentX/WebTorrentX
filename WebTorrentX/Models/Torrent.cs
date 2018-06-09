@@ -155,55 +155,20 @@ namespace WebTorrentX.Models
                 return handle.InfoHash;
             }
         }
-
-        public IEnumerable<string> Files
+        
+        public IEnumerable<TorrentFileInfo> FilesInfo
         {
             get
             {
-                if (handle.TorrentFile != null)
+                if (handle != null && handle.TorrentFile != null)
                 {
                     for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
                     {
-                        yield return handle.TorrentFile.FileAt(i).Path;
+                        TorrentFileInfo tfinfo = new TorrentFileInfo(handle, i);
+                        yield return tfinfo;
                     }
                 }
-                else yield return null;
             }
-        }
-
-        public IEnumerable<double> FileDownloadedPercent
-        {
-            get
-            {
-                if (handle.TorrentFile != null)
-                {
-                    for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
-                    {
-                        var file = handle.TorrentFile.FileAt(i);
-                        FileInfo info = new FileInfo(Path.Combine(DownloadPath, file.Path));
-                        yield return info.Length * 100 / file.Size;
-                    }
-                }
-                else yield return 0;
-            }
-        }
-
-        public IEnumerable<double> FileDownloadedBytes
-        {
-            get
-            {
-                if (handle.TorrentFile != null)
-                {
-                    for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
-                    {
-                        var file = handle.TorrentFile.FileAt(i);
-                        FileInfo info = new FileInfo(Path.Combine(DownloadPath, file.Path));
-                        yield return info.Length;
-                    }
-                }
-                else yield return 0;
-            }
-
         }
 
         public string Url { get; set; } = string.Empty;
@@ -270,6 +235,7 @@ namespace WebTorrentX.Models
 
         public void UpdateProperties()
         {
+            OnPropertyChanged(nameof(FilesInfo));
             OnPropertyChanged(nameof(Name));
             OnPropertyChanged(nameof(Size));
             OnPropertyChanged(nameof(Done));

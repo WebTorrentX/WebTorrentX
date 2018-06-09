@@ -5,6 +5,9 @@ using System.Windows.Controls;
 using WebTorrentX.Controllers;
 using WebTorrentX.Models;
 using System.Diagnostics;
+using FontAwesome.WPF;
+using System.Linq;
+using System;
 
 namespace WebTorrentX.ViewModels
 {
@@ -93,9 +96,8 @@ namespace WebTorrentX.ViewModels
         {
             if ((sender as Button).Tag is Torrent)
             {
-                string path = Path.Combine(((sender as Button).Tag as Torrent).DownloadPath, ((sender as Button).Tag as Torrent).Name);
                 var torrent = (sender as Button).Tag as Torrent;
-                Application.Current.Properties["torrent"] = torrent;
+                Application.Current.Properties["tfinfo"] = torrent.FilesInfo.ElementAt(0);
                 NavigationService.Navigate(new PlayerPage());
             }                
         }
@@ -122,5 +124,34 @@ namespace WebTorrentX.ViewModels
             }
         }
 
+        private void StopDownloadFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as Button).Tag is TorrentFileInfo)
+            {
+                var button = sender as Button;
+                var tfinfo = button.Tag as TorrentFileInfo;
+                if (tfinfo.Priority == 1)
+                {
+                    tfinfo.StopDownload();
+                    (button.FindName("IAIcon") as ImageAwesome).Icon = FontAwesomeIcon.Play;
+                }
+                else
+                {
+                    tfinfo.ContinueDownload();
+                    (button.FindName("IAIcon") as ImageAwesome).Icon = FontAwesomeIcon.Remove;
+                }
+                
+            }
+        }
+
+        private void PlayFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as Button).Tag is TorrentFileInfo)
+            {
+                var tfinfo = (sender as Button).Tag as TorrentFileInfo;
+                Application.Current.Properties["tfinfo"] = tfinfo;
+                NavigationService.Navigate(new PlayerPage());
+            }                
+        }
     }
 }

@@ -111,7 +111,7 @@
                 </StackPanel>
                 <Expander Header="Files" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="10">
                     <ListView Height="Auto" MaxHeight="200"
-                          ItemsSource="{Binding Files, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                          ItemsSource="{Binding FilesInfo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                         <ListView.Style>
                             <Style TargetType="{x:Type ListView}">                                
                                 <Setter Property="BorderThickness" Value="0"/>
@@ -139,17 +139,17 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel LastChildFill="False" Margin="0">
-                                    <Button Style="{StaticResource ButtonStyle}"
-                                        DockPanel.Dock="Left" Width="20" Height="20" Margin="5">
+                                    <Button x:Name="PlayFileButton" Style="{StaticResource ButtonStyle}" Tag="{Binding}"
+                                        DockPanel.Dock="Left" Width="20" Height="20" Margin="5" Click="PlayFileButton_Click">
                                         <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Play" />
                                     </Button>
-                                    <TextBlock Text="{Binding}" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                                    <Button DockPanel.Dock="Right" Style="{StaticResource ButtonStyle}"
-                                        Width="15" Height="15" Margin="5">
-                                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Remove" />
-                                    </Button>
-                                    <TextBlock DockPanel.Dock="Right" Text="500 MB" Margin="5" VerticalAlignment="Center"/>
-                                    <TextBlock DockPanel.Dock="Right" Text="0%" Margin="5" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Path=Name}" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                    <!--<Button x:Name="StopDownloadFileButton" DockPanel.Dock="Right" Style="{StaticResource ButtonStyle}"
+                                        Width="15" Height="15" Margin="5" Tag="{Binding}" Click="StopDownloadFileButton_Click">
+                                        <fa:ImageAwesome x:Name="IAIcon" Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Remove" />
+                                    </Button>-->
+                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Path=Size, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center"/>
+                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Path=DownloadedPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>

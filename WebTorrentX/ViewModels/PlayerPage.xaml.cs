@@ -16,9 +16,7 @@ namespace WebTorrentX.ViewModels
     public sealed partial class PlayerPage : Page, INotifyPropertyChanged
     {
 
-        private Torrent torrent;
-        private string filename = string.Empty;
-        private int fileindex = 0;
+        private TorrentFileInfo tfinfo;
         private int bufferingStart = 3;
 
         private Visibility loading = Visibility.Visible;
@@ -70,7 +68,7 @@ namespace WebTorrentX.ViewModels
                     {
                         try
                         {
-                            var shell = ShellObject.FromParsingName(filename);
+                            var shell = ShellObject.FromParsingName(tfinfo.FilePath);
                             IShellProperty prop = shell.Properties.System.Media.Duration;
                             var t = (ulong)prop.ValueAsObject;
                             return TimeSpan.FromTicks((long)t);
@@ -130,11 +128,9 @@ namespace WebTorrentX.ViewModels
         {
             get
             {
-                if (torrent != null)
+                if (tfinfo != null)
                 {
-                    //double buffer = 0;
-                    //buffer = torrent.FilesInfo[fileindex].Item1.Length * 100 / torrent.FilesInfo[fileindex].Item2;
-                    return torrent.FileDownloadedPercent.ElementAt(fileindex);
+                    return tfinfo.DownloadedPercent;
                 }
                 else return 0;
             }
@@ -155,86 +151,30 @@ namespace WebTorrentX.ViewModels
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            torrent = Application.Current.Properties["torrent"] as Torrent;
-            if (torrent != null)
+            if (Application.Current.Properties["tfinfo"] != null)
             {
-                if (torrent.Files.Count() == 1)
+                tfinfo = Application.Current.Properties["tfinfo"] as TorrentFileInfo;
+                try
                 {
-                    filename = Path.Combine(torrent.DownloadPath, torrent.Files.ElementAt(0));
-                    fileindex = 0;
-                    try
-                    {
-                        Player.LoadMedia(filename);                      
-                    }
-                    catch
-                    {
-                        string message = string.Format("Couldn't open file {0}", filename);
-                        MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
-                        GoBack();
-                    }
-                    Thread t = new Thread(() =>
-                    {
-                        while (Player.VlcMediaPlayer.State != Meta.Vlc.Interop.Media.MediaState.Stopped)
-                        {
-                            ThreadTask();
-                            Thread.Sleep(500);
-                        }                        
-                    });
-                    t.Start();
+                    Player.LoadMedia(tfinfo.FilePath);
                 }
-                else
+                catch
                 {
-                    string path = Path.Combine(torrent.DownloadPath, torrent.Name);
-                    if (Directory.Exists(path))
-                    {
-                        string[] extensions = { ".mkv", ".flv", ".f4p", ".f4a", ".f4v", "f4b", ".avi", ".wmv", ".mp4", ".m4p", ".m4v", ".mpg", ".mpeg", ".m2v", ".3gp" };
-                        foreach (string file in Directory.GetFiles(path))
-                        {
-                            if (extensions.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase))
-                            {
-                                for (int i = 0; i < torrent.Files.Count(); i++)
-                                {
-                                    string name = Path.Combine(torrent.DownloadPath, torrent.Files.ElementAt(i));
-                                    if (name.Equals(file))
-                                    {
-                                        filename = name;
-                                        fileindex = i;
-                                        try
-                                        {
-                                            Player.LoadMedia(filename);
-                                            Thread t = new Thread(() =>
-                                            {
-                                                while (Player.VlcMediaPlayer.State != Meta.Vlc.Interop.Media.MediaState.Stopped)
-                                                {
-                                                    ThreadTask();
-                                                    Thread.Sleep(500);
-                                                }
-                                            });
-                                            t.Start();
-                                            return;
-                                        }
-                                        catch
-                                        {
-                                            string message = string.Format("Couldn't open file {0}", filename);
-                                            MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
-                                            GoBack();
-                                        }
-                                        
-                                    }
-                                }   
-                            }
-                        }
-                    }
-                    else
-                    {
-                        GoBack();
-                    }                    
+                    string message = string.Format("Couldn't open file {0}", tfinfo.FilePath);
+                    MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
+                    GoBack();
                 }
+                Thread t = new Thread(() =>
+                {
+                    while (Player.VlcMediaPlayer.State != Meta.Vlc.Interop.Media.MediaState.Stopped)
+                    {
+                        ThreadTask();
+                        Thread.Sleep(500);
+                    }
+                });
+                t.Start();
             }
-            else
-            {
-                GoBack();
-            }
+            
         }
 
         private void ThreadTask()
@@ -289,7 +229,7 @@ namespace WebTorrentX.ViewModels
                     Loading = Visibility.Collapsed;
                     break;
                 case Meta.Vlc.Interop.Media.MediaState.Error:
-                    string message = string.Format("Couldn't open file {0}", filename);
+                    string message = string.Format("Couldn't open file {0}", tfinfo.FilePath);
                     MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
                     GoBack();
                     break;

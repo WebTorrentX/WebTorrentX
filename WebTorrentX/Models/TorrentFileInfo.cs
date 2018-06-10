@@ -54,7 +54,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                return handle.TorrentFile.FileAt(fileindex).Size;
+                return handle.TorrentFile.FileAt(fileindex).Size / (1024 * 1024);
             }
         }
 

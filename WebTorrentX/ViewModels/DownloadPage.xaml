@@ -148,8 +148,14 @@
                                         Width="15" Height="15" Margin="5" Tag="{Binding}" Click="StopDownloadFileButton_Click">
                                         <fa:ImageAwesome x:Name="IAIcon" Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Remove" />
                                     </Button>-->
-                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Path=Size, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center"/>
-                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Path=DownloadedPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center"/>
+                                    <TextBlock DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat=" {0} MB {1}%">
+                                                <Binding Path="Size" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                                <Binding Path="DownloadedPercent" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </DockPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>

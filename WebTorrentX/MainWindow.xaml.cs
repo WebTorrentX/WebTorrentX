@@ -42,6 +42,20 @@ namespace WebTorrentX
             }
         }
 
+        private Visibility hideControls;
+        public Visibility HideControls
+        {
+            get
+            {
+                return hideControls;
+            }
+            set
+            {
+                hideControls = value;
+                OnPropertyChanged(nameof(HideControls));
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();

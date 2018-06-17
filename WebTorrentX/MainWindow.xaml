@@ -119,7 +119,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0" Style="{StaticResource MenuStyle}">
+        <Menu Visibility="{Binding HideControls, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Style="{StaticResource MenuStyle}">
             <MenuItem Header="File">
                 <MenuItem x:Name="OpenButton" InputGestureText="Ctrl+O" Header="Open Torrent File..." Click="OpenButton_Click"/>
                 <MenuItem x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open Torrent Address..." Click="OpenAddressButton_Click"/>

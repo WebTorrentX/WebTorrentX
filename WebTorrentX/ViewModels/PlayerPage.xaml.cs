@@ -3,12 +3,9 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Threading;
-using FontAwesome;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using WebTorrentX.Models;
-using System.IO;
-using System.Linq;
 
 namespace WebTorrentX.ViewModels
 {
@@ -18,6 +15,8 @@ namespace WebTorrentX.ViewModels
 
         private TorrentFileInfo tfinfo;
         private int bufferingStart = 3;
+        
+        public bool IsFullscreen { get; private set; } = false;
 
         private Visibility loading = Visibility.Visible;
         public Visibility Loading
@@ -136,6 +135,17 @@ namespace WebTorrentX.ViewModels
             }
         }
 
+        private int countToHide = 0;
+        public Visibility HideControls
+        {
+            get
+            {
+                if (countToHide >= 10)
+                    return Visibility.Collapsed;
+                else return Visibility.Visible;
+            }
+        }
+
         
 
         public PlayerPage()
@@ -165,7 +175,7 @@ namespace WebTorrentX.ViewModels
                     GoBack();
                 }
                 Thread t = new Thread(() =>
-                {
+                {                    
                     while (Player.VlcMediaPlayer.State != Meta.Vlc.Interop.Media.MediaState.Stopped)
                     {
                         ThreadTask();
@@ -179,6 +189,8 @@ namespace WebTorrentX.ViewModels
 
         private void ThreadTask()
         {
+            if (countToHide < 10 && IsFullscreen)
+                countToHide++;
             if (Length > TimeSpan.Zero)
             {
                 double percentPlayed = Progress * 100 / Length.TotalSeconds;
@@ -209,6 +221,7 @@ namespace WebTorrentX.ViewModels
             }
             Dispatcher.Invoke(delegate 
             {
+                OnPropertyChanged(nameof(HideControls));
                 OnPropertyChanged(nameof(Buffering));
                 OnPropertyChanged(nameof(Length));
                 OnPropertyChanged(nameof(Maximum));
@@ -268,9 +281,22 @@ namespace WebTorrentX.ViewModels
                 double value = time * 100 / Length.TotalSeconds;
                 if (Buffering - value > 1)
                 {
-                    Player.Time = new TimeSpan(0, 0, (int)time);
-                }                
-            }                
+                    Player.Time = new TimeSpan(0, 0, (int)time); 
+                }
+            }
+        }
+
+        private void progressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Length > TimeSpan.Zero)
+            {
+                double time = (sender as Slider).Value;
+                double value = time * 100 / Length.TotalSeconds;
+                if (Buffering - value > 1 && Math.Abs(time - Player.Time.TotalSeconds) > 1)
+                {
+                    Player.Time = new TimeSpan(0, 0, (int)Math.Ceiling(time));
+                }
+            }
         }
 
         private void SoundSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -298,11 +324,7 @@ namespace WebTorrentX.ViewModels
             if (NavigationService.CanGoBack)
             {
                 Player.Stop();
-                if (Window.GetWindow(this).WindowState == WindowState.Maximized)
-                {
-                    Window.GetWindow(this).WindowState = WindowState.Normal;
-                    Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
-                }
+                if (IsFullscreen) Fullscreen();
                 NavigationService.GoBack();
             }                
         }
@@ -316,13 +338,17 @@ namespace WebTorrentX.ViewModels
         {
             if (Window.GetWindow(this).WindowState == WindowState.Normal)
             {
+                IsFullscreen = true;
                 Window.GetWindow(this).WindowStyle = WindowStyle.None;
                 Window.GetWindow(this).WindowState = WindowState.Maximized;
+                (Window.GetWindow(this) as MainWindow).HideControls = Visibility.Collapsed;
             }
             else
             {
+                IsFullscreen = false;
                 Window.GetWindow(this).WindowState = WindowState.Normal;
                 Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
+                (Window.GetWindow(this) as MainWindow).HideControls = Visibility.Visible;
             }
         }
 
@@ -387,6 +413,22 @@ namespace WebTorrentX.ViewModels
         public void LoadSubtitles(string path)
         {
             bool b = Player.VlcMediaPlayer.SetSubtitleFile(path);
+        }
+
+        private void Player_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (IsFullscreen)
+            {
+                if (countToHide > 0 && countToHide < 10)
+                    countToHide = 10;
+                else if (countToHide == 10 )
+                    countToHide = 0;
+            }            
+        }
+
+        private void Player_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Fullscreen();
         }
     }
 }

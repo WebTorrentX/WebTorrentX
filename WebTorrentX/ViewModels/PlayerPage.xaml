@@ -47,7 +47,7 @@
                 </Grid.RowDefinitions>
                 <Track Grid.Row="1" x:Name="PART_Track"   >
                     <Track.DecreaseRepeatButton>
-                        <RepeatButton Command="Slider.DecreaseLarge" >
+                        <RepeatButton Command="Slider.DecreaseLarge">
                             <RepeatButton.Style>
                                 <Style TargetType="{x:Type RepeatButton}">
                                     <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -130,27 +130,35 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Button Style="{StaticResource PlayerButtonStyle}" Margin="5" x:Name="BackButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackButton_Click">
+        <Button Visibility="{Binding HideControls, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PlayerButtonStyle}" Margin="5" x:Name="BackButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackButton_Click">
             <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="ChevronLeft" />           
         </Button>
 
         <meta:VlcPlayer x:Name="Player" Grid.Row="1" LibVlcPath="LibVlc"
                         VlcOption="{StaticResource VlcOptions}"
-                        StateChanged="Player_StateChanged"/>
+                        StateChanged="Player_StateChanged"
+                        MouseDown="Player_MouseDown"
+                        MouseDoubleClick="Player_MouseDoubleClick"/>
         
         <StackPanel Visibility="{Binding Loading, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <fa:ImageAwesome Icon="Spinner" Spin="True" Height="32" Width="32" Foreground="LightGray" />
             <TextBlock Text="Loading..." Foreground="LightGray" Margin="0, 5, 0, 0"/>
         </StackPanel>
 
-        <ProgressBar Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="3" BorderThickness="0" Background="Black" Foreground="IndianRed" Minimum="0" Maximum="100" Value="{Binding Buffering, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Slider Style="{StaticResource Horizontal_Slider}" x:Name="progressBar" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Minimum="0" Maximum="{Binding Maximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Thumb.DragCompleted="progressBar_DragCompleted"/>
+        <ProgressBar Visibility="{Binding HideControls, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                     Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="3" BorderThickness="0" Background="Black" Foreground="IndianRed" 
+                     Minimum="0" Maximum="100" Value="{Binding Buffering, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <Slider Visibility="{Binding HideControls, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                Style="{StaticResource Horizontal_Slider}" x:Name="progressBar" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                Minimum="0" Maximum="{Binding Maximum, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                Thumb.DragCompleted="progressBar_DragCompleted" IsMoveToPointEnabled="True" ValueChanged="progressBar_ValueChanged"/>
 
-        
-        <DockPanel Grid.Row="3" Margin="0" LastChildFill="False">
+
+        <DockPanel Visibility="{Binding HideControls, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" Margin="0,5,0,10" LastChildFill="False">
             <Button DockPanel.Dock="Left" Style="{StaticResource PlayerButtonStyle}" x:Name="PlayPauseButton" Click="PlayPauseButton_Click" Margin="10,0,5,0">
                 <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Pause" x:Name="PlayPauseIcon"/>
             </Button>

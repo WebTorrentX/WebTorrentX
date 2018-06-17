@@ -175,7 +175,7 @@ namespace WebTorrentX.Models
         public string Url { get; set; } = string.Empty;
         public string TorrentFileName { get; set; } = string.Empty;
 
-        private string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WebTorrentX");
+        private static string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WebTorrentX");
 
         private Torrent(AddTorrentParams addParams, Session session)
         {
@@ -211,7 +211,7 @@ namespace WebTorrentX.Models
         {
             AddTorrentParams addParams = new AddTorrentParams
             {
-                SavePath = torrent.Path
+                SavePath = string.IsNullOrEmpty((string)torrent.Path) ? Properties.Settings.Default.Location : (string)torrent.Path
             };
             if (string.IsNullOrEmpty((string)torrent.TorrentFileName))
             {
@@ -226,13 +226,13 @@ namespace WebTorrentX.Models
             }
             else
             {
-                if (File.Exists((string)torrent.TorrentFileName))
-                    addParams.TorrentInfo = new TorrentInfo((string)torrent.TorrentFileName);
+                if (File.Exists(Path.Combine(appDataFolder, ".torrents", (string)torrent.TorrentFileName)))
+                    addParams.TorrentInfo = new TorrentInfo(Path.Combine(appDataFolder, ".torrents", (string)torrent.TorrentFileName));
                 else return null;
             }
             var result =  Create(addParams, session);
             result.Url = (string)torrent.Url;
-            result.TorrentFileName = (string)torrent.TorrentFileName;
+            result.TorrentFileName = Path.Combine(appDataFolder, ".torrents", (string)torrent.TorrentFileName);
             if (torrent.Status == "Pause")
             {
                 result.handle.Pause();
@@ -309,7 +309,7 @@ namespace WebTorrentX.Models
                 Name = Name,
                 Path = DownloadPath,
                 Url = Url,
-                TorrentFileName = TorrentFileName
+                TorrentFileName = Path.GetFileName(TorrentFileName)
             };
             if (File.Exists(activeTorrentsFile))
                 File.AppendAllText(activeTorrentsFile, string.Concat(JsonConvert.SerializeObject(torrent), Environment.NewLine));

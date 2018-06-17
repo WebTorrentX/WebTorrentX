@@ -15,7 +15,9 @@ namespace WebTorrentX.ViewModels
 
         private TorrentFileInfo tfinfo;
         private int bufferingStart = 3;
-        
+
+        private bool first = true;
+
         public bool IsFullscreen { get; private set; } = false;
 
         private Visibility loading = Visibility.Visible;
@@ -188,7 +190,7 @@ namespace WebTorrentX.ViewModels
         }
 
         private void ThreadTask()
-        {
+        {            
             if (countToHide < 10 && IsFullscreen)
                 countToHide++;
             if (Length > TimeSpan.Zero)
@@ -215,8 +217,13 @@ namespace WebTorrentX.ViewModels
             {
                 Dispatcher.Invoke(delegate
                 {
-                    IsBuffering = false;
-                    Play();
+                    
+                    if (first)
+                    {
+                        IsBuffering = false;
+                        Play();
+                        first = false;
+                    }
                 });
             }
             Dispatcher.Invoke(delegate 
@@ -227,8 +234,7 @@ namespace WebTorrentX.ViewModels
                 OnPropertyChanged(nameof(Maximum));
                 OnPropertyChanged(nameof(Progress));
                 OnPropertyChanged(nameof(Time));
-            });
-            
+            });            
         }
 
         private void Player_StateChanged(object sender, Meta.Vlc.ObjectEventArgs<Meta.Vlc.Interop.Media.MediaState> e)
@@ -346,6 +352,7 @@ namespace WebTorrentX.ViewModels
             else
             {
                 IsFullscreen = false;
+                countToHide = 0;
                 Window.GetWindow(this).WindowState = WindowState.Normal;
                 Window.GetWindow(this).WindowStyle = WindowStyle.SingleBorderWindow;
                 (Window.GetWindow(this) as MainWindow).HideControls = Visibility.Visible;
@@ -426,9 +433,5 @@ namespace WebTorrentX.ViewModels
             }            
         }
 
-        private void Player_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Fullscreen();
-        }
     }
 }

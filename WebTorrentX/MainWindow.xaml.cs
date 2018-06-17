@@ -194,7 +194,13 @@ namespace WebTorrentX
             switch (e.Key)
             {
                 case Key.Escape:
-                    GoBack();
+                    if (MainFrame.Content is PlayerPage)
+                    {
+                        if ((MainFrame.Content as PlayerPage).IsFullscreen)
+                            Fullscreen();
+                        else GoBack();
+                    }
+                    else GoBack();
                     break;
                 case Key.F11:
                     Fullscreen();

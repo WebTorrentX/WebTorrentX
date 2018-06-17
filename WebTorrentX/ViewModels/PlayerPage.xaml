@@ -140,8 +140,7 @@
         <meta:VlcPlayer x:Name="Player" Grid.Row="1" LibVlcPath="LibVlc"
                         VlcOption="{StaticResource VlcOptions}"
                         StateChanged="Player_StateChanged"
-                        MouseDown="Player_MouseDown"
-                        MouseDoubleClick="Player_MouseDoubleClick"/>
+                        MouseDown="Player_MouseDown"/>
         
         <StackPanel Visibility="{Binding Loading, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <fa:ImageAwesome Icon="Spinner" Spin="True" Height="32" Width="32" Foreground="LightGray" />

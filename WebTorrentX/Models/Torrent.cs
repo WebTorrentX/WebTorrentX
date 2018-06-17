@@ -130,7 +130,8 @@ namespace WebTorrentX.Models
                 {
                     if (handle.IsPaused)
                         return "Pause";
-                    else return handle.QueryStatus().State.ToString();
+                    else
+                        return handle.QueryStatus().State.ToString();
                 }
                 else return string.Empty;
             }
@@ -174,11 +175,13 @@ namespace WebTorrentX.Models
         public string Url { get; set; } = string.Empty;
         public string TorrentFileName { get; set; } = string.Empty;
 
+        private string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WebTorrentX");
+
         private Torrent(AddTorrentParams addParams, Session session)
         {
-            fastResumeDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".resume");
-            torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
-            activeTorrentsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".download");
+            fastResumeDir = Path.Combine(appDataFolder, ".resume");
+            torrentDir = Path.Combine(appDataFolder, ".torrents");
+            activeTorrentsFile = Path.Combine(appDataFolder, ".download");
             LoadTorrentState(ref addParams);
             handle = session.AddTorrent(addParams);
             handle.SequentialDownload = true;
@@ -230,6 +233,10 @@ namespace WebTorrentX.Models
             var result =  Create(addParams, session);
             result.Url = (string)torrent.Url;
             result.TorrentFileName = (string)torrent.TorrentFileName;
+            if (torrent.Status == "Pause")
+            {
+                result.handle.Pause();
+            }
             return result;
         }
 

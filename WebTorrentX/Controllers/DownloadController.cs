@@ -24,11 +24,13 @@ namespace WebTorrentX.Controllers
 
         public event EventHandler<string> Error;
 
+        private string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WebTorrentX");
+
         public DownloadController()
         {
-            sesStateFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".ses_state");
-            torrentDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".torrents");
-            activeTorrentsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".download");
+            sesStateFile = Path.Combine(appDataFolder, ".ses_state");
+            torrentDir = Path.Combine(appDataFolder, ".torrents");
+            activeTorrentsFile = Path.Combine(appDataFolder, ".download");
             session = new Session();
             LoadSessionState();            
             Torrents = new ObservableCollection<Torrent>();

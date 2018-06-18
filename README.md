@@ -7,7 +7,7 @@ We have used latest technology to build this torrent client from scratch and it 
 
 # How to install?
 
-Download the beta version here: https://drive.google.com/file/d/1Lxt6MEBUIAKgsAdg3n8W6ix9CDx_p7yF/view?usp=sharing
+Download the beta version here: https://drive.google.com/open?id=1KVU4DicwywYbmIpvw-ATAWs6KDqM9J5y
 
 # Want to join the team? 
 Just email us, we will review your application and get back to you if you are selected

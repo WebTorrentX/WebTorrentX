@@ -136,7 +136,8 @@ namespace WebTorrentX.ViewModels
         private void Associate(string extension, string progID, string description, string icon, string application)
         {
             var key = Registry.CurrentUser.OpenSubKey("Software\\Classes", true);
-            key.CreateSubKey(extension, true).SetValue("", progID);
+            //key.CreateSubKey(extension, true).SetValue("", progID);
+            key.CreateSubKey(extension, RegistryKeyPermissionCheck.ReadWriteSubTree);
             if (progID != null && progID.Length > 0)
             {
                 using (RegistryKey subkey = key.CreateSubKey(progID))

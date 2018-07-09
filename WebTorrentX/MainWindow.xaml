@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Torrent Player" Height="450" Width="800" MinHeight="300" MinWidth="400"
+        Title="WebTorrentX" Height="450" Width="800" MinHeight="300" MinWidth="400"
         Closing="Window_Closing"
         x:Name="mainWindow" KeyDown="mainWindow_KeyDown"
         Background="#1e1e1e">

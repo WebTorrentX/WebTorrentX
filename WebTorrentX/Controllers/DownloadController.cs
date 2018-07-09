@@ -37,6 +37,21 @@ namespace WebTorrentX.Controllers
             LoadActiveTorrents();
         }
 
+        private void AddTorrent(Torrent torrent)
+        {
+            if (Torrents.Count == 0)
+            {
+                Torrents.Add(torrent);
+                Torrents.Add(Torrent.CreateEmpty());
+            }
+            else
+            {
+                Torrents.RemoveAt(Torrents.Count - 1);
+                Torrents.Add(torrent);
+                Torrents.Add(Torrent.CreateEmpty());
+            }
+        }
+
         private void LoadActiveTorrents()
         {
             if (File.Exists(activeTorrentsFile))
@@ -47,9 +62,10 @@ namespace WebTorrentX.Controllers
                     dynamic t = JsonConvert.DeserializeObject(line);
                     Torrent torrent = Torrent.CreateFromSavedData(t, session);
                     if (torrent != null)
-                        Torrents.Add(torrent);
+                        AddTorrent(torrent);
                 }
             }
+            else Torrents.Add(Torrent.CreateEmpty());
         }
 
         private void LoadSessionState()
@@ -63,7 +79,7 @@ namespace WebTorrentX.Controllers
 
         private void SaveSessionState()
         {
-            if (Torrents.Count > 0) File.WriteAllBytes(sesStateFile, session.SaveState());               
+            if (Torrents.Count > 1) File.WriteAllBytes(sesStateFile, session.SaveState());               
         }
 
         public void LoadMagnet(string link)
@@ -80,10 +96,10 @@ namespace WebTorrentX.Controllers
                         Url = link
                     };
                     var torrent = Torrent.Create(addParams, session);
-                    var result = from t in Torrents where t.InfoHash.ToHex() == torrent.InfoHash.ToHex() select t;
+                    var result = from t in Torrents where t.InfoHash == torrent.InfoHash select t;
                     if (result == null || result.Count() == 0)
                     {
-                        Torrents.Add(torrent);
+                        AddTorrent(torrent);
                     }
                     else
                     {
@@ -110,7 +126,7 @@ namespace WebTorrentX.Controllers
                 TorrentInfo info = new TorrentInfo(filename);
                 string torrentFileName = Path.Combine(torrentDir, info.Name + ".torrent");
                 File.Copy(filename, torrentFileName, true);
-                var result = from t in Torrents where t.InfoHash.ToHex() == info.InfoHash select t;
+                var result = from t in Torrents where t.InfoHash == info.InfoHash select t;
                 if (result == null || result.Count() == 0)
                 {
                     var addParams = new AddTorrentParams
@@ -120,7 +136,7 @@ namespace WebTorrentX.Controllers
                     };
                     var torrent = Torrent.Create(addParams, session);
                     torrent.TorrentFileName = torrentFileName;
-                    Torrents.Add(torrent);
+                    AddTorrent(torrent);
                 }
                 else
                 {

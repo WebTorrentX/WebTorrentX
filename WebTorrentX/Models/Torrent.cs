@@ -21,11 +21,13 @@ namespace WebTorrentX.Models
         private readonly string torrentDir;
         private readonly string activeTorrentsFile;
 
+        public bool IsEmpty { get; private set; } = false;
+
         public string Name
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                     return handle.QueryStatus().Name;
                 else return string.Empty;
             }
@@ -35,7 +37,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                     return Math.Round((double)handle.QueryStatus().TotalWanted / (1024 * 1024), 2);
                 else return 0;
             }
@@ -45,7 +47,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                     return Math.Round((double)handle.QueryStatus().TotalWantedDone / (1024 * 1024), 2);
                 else return 0;
             }
@@ -55,7 +57,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                     return Math.Round(handle.QueryStatus().Progress * 100f, 2);
                 else return 0;
             }
@@ -65,7 +67,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                     return handle.QueryStatus().NumPeers;
                 else return 0;
             }
@@ -75,7 +77,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                     return Math.Round(handle.QueryStatus().DownloadRate / 1024f, 2);
                 else return 0;
             }
@@ -85,7 +87,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null && Speed > 0)
+                if (handle != null && Speed > 0 && !IsEmpty)
                 {
                     int p = (int)((Size - Done) * 1024 / Speed);
                     TimeSpan ts = new TimeSpan(0, 0, p);
@@ -100,13 +102,13 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                     return !handle.IsPaused;
                 else return false;
             }
             set
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                 {
                     if (value && handle.IsPaused)
                     {
@@ -126,7 +128,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                 {
                     if (handle.IsPaused)
                         return "Pause";
@@ -141,7 +143,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null)
+                if (handle != null && !IsEmpty)
                 {
                     return handle.QueryStatus().SavePath;
                 }
@@ -149,11 +151,15 @@ namespace WebTorrentX.Models
             }
         }
 
-        public SHA1Hash InfoHash
+        public string InfoHash
         {
             get
             {
-                return handle.InfoHash;
+                if (handle != null && !IsEmpty)
+                {
+                    return handle.InfoHash.ToHex();
+                }
+                else return string.Empty;
             }
         }
         
@@ -161,7 +167,7 @@ namespace WebTorrentX.Models
         {
             get
             {
-                if (handle != null && handle.TorrentFile != null)
+                if (handle != null && handle.TorrentFile != null && !IsEmpty)
                 {
                     for (int i = 0; i < handle.TorrentFile.NumFiles; i++)
                     {
@@ -176,6 +182,8 @@ namespace WebTorrentX.Models
         public string TorrentFileName { get; set; } = string.Empty;
 
         private static string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WebTorrentX");
+
+        private Torrent() { }
 
         private Torrent(AddTorrentParams addParams, Session session)
         {
@@ -240,8 +248,16 @@ namespace WebTorrentX.Models
             return result;
         }
 
+        public static Torrent CreateEmpty()
+        {
+            Torrent torrent = new Torrent();
+            torrent.IsEmpty = true;
+            return torrent;
+        }
+
         public void UpdateProperties()
         {
+            if (IsEmpty) return;
             OnPropertyChanged(nameof(FilesInfo));
             OnPropertyChanged(nameof(Name));
             OnPropertyChanged(nameof(Size));
@@ -256,7 +272,7 @@ namespace WebTorrentX.Models
 
         private void LoadTorrentState(ref AddTorrentParams p)
         {
-            if (p.TorrentInfo == null) return;
+            if (IsEmpty || p.TorrentInfo == null) return;
             string file = Path.Combine(fastResumeDir, p.TorrentInfo.Name + ".fastresume");
             if (File.Exists(file))
             {
@@ -266,7 +282,7 @@ namespace WebTorrentX.Models
 
         private void SaveTorrentState()
         {
-            if (handle.NeedSaveResumeData())
+            if (handle.NeedSaveResumeData() && !IsEmpty)
             {
                 handle.SaveResumeData();
                 var savedFastResume = false;
@@ -300,12 +316,13 @@ namespace WebTorrentX.Models
 
         public void Dispose()
         {
+            if (IsEmpty) return;
             active = false;
             SaveTorrentState();
             dynamic torrent = new
             {
                 Status = Status,
-                InfoHash = InfoHash.ToHex(),
+                InfoHash = InfoHash,
                 Name = Name,
                 Path = DownloadPath,
                 Url = Url,
@@ -318,6 +335,7 @@ namespace WebTorrentX.Models
 
         public void Remove()
         {
+            if (IsEmpty) return;
             active = false;
             string torrent = Path.Combine(torrentDir, handle.QueryStatus().Name + ".torrent");
             if (File.Exists(torrent))

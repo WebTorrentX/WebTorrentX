@@ -153,5 +153,21 @@ namespace WebTorrentX.ViewModels
                 NavigationService.Navigate(new PlayerPage());
             }                
         }
+
+        private void ItemGrid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var lv = (sender as Grid).FindName("FilesListView");
+            if (lv as ListView != null)
+            {
+                if ((lv as ListView).Visibility == Visibility.Collapsed)
+                {
+                    (lv as ListView).Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    (lv as ListView).Visibility = Visibility.Collapsed;
+                }
+            }
+        }
     }
 }

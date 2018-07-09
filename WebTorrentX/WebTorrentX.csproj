@@ -30,7 +30,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -101,10 +102,10 @@
       <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
     </Reference>
     <Reference Include="Meta.Vlc, Version=16.5.1.0, Culture=neutral, PublicKeyToken=721a8c5379fa4056, processorArchitecture=x86">
-      <HintPath>..\packages\Meta.Vlc.17.06.20\lib\net45\x86\Meta.Vlc.dll</HintPath>
+      <HintPath>..\packages\Meta.Vlc.17.06.20\lib\net40\x86\Meta.Vlc.dll</HintPath>
     </Reference>
     <Reference Include="Meta.Vlc.Wpf, Version=16.5.1.0, Culture=neutral, PublicKeyToken=721a8c5379fa4056, processorArchitecture=x86">
-      <HintPath>..\packages\Meta.Vlc.Wpf.17.06.20\lib\net45\x86\Meta.Vlc.Wpf.dll</HintPath>
+      <HintPath>..\packages\Meta.Vlc.Wpf.17.06.20\lib\net40\x86\Meta.Vlc.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -145,6 +146,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controllers\DownloadController.cs" />
+    <Compile Include="Converters\IsLastItemInContainerConverter.cs" />
     <Compile Include="Models\Torrent.cs" />
     <Compile Include="Models\TorrentFileInfo.cs" />
     <Compile Include="ViewModels\AboutWindow.xaml.cs">
@@ -213,9 +215,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="LibVlc\plugins\plugins.dat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="LibVlc\plugins\plugins.dat" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

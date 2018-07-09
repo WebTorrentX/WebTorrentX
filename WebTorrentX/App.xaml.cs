@@ -30,5 +30,10 @@ namespace WebTorrentX
                 Application.Current.Properties["openfile"] = e.Args[0];
             }
         }
+
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show(e.Exception.ToString());
+        }
     }
 }

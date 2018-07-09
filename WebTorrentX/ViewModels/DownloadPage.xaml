@@ -4,39 +4,18 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:fa="http://schemas.fontawesome.io/icons/"
+      xmlns:converters="clr-namespace:WebTorrentX.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="WebTorrentX - Download"
       Loaded="Page_Loaded">
     <Page.Resources>
 
+        <converters:IsLastItemInContainerConverter x:Key="IsLastItemInContainerConverter" />
+        
         <Style TargetType="{x:Type Menu}" x:Key="MenuStyle">
             <Setter Property="Background" Value="#1b1b1c"/>
             <Setter Property="Foreground" Value="LightGray"/>
-        </Style>        
-
-        <Style TargetType="{x:Type ListView}" x:Key="ListViewStyle">
-            <Setter Property="Background" Value="#1e1e1e"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-            <Setter Property="ItemContainerStyle">
-                <Setter.Value>                    
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-                        <Setter Property="Margin" Value="0"/>
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <LinearGradientBrush>
-                                    <GradientStop Color="#426a8d" Offset="0"/>
-                                    <GradientStop Color="#2d465c" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="Focusable" Value="False"/>
-                    </Style>
-                </Setter.Value>
-            </Setter>
         </Style>
 
         <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
@@ -65,105 +44,176 @@
             </Style.Triggers>
         </Style>
 
-        <DataTemplate x:Key="TorrentListItemTemplate">
-            <Grid HorizontalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Margin="10" Grid.Row="0" Grid.Column="0" 
-                           FontWeight="Bold" FontSize="20"
-                           Text="{Binding Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <WrapPanel Margin="10, 0, 10, 10" Grid.Row="1" Grid.Column="0">
-                    <CheckBox IsChecked="{Binding IsDownloading, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding Status, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
-                    <ProgressBar Width="60" Height="5" VerticalAlignment="Center" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0"/>
-                    <TextBlock Text="%" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding Done, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text=" mb / "/>
-                    <TextBlock Text="{Binding Size, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text=" mb" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding Peers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text=" Peers" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding Speed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text=" KB/s" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding TimeRemaining, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                </WrapPanel>
-                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
-                    <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
-                            x:Name="PlayButton" Click="PlayButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
-                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Play" />
-                    </Button>
-                    <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
-                            x:Name="RemoveTorrentButton" Click="RemoveTorrentButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
-                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Trash" />
-                    </Button>
-                    <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
-                            x:Name="OpenFolderButton" Click="OpenFolderButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
-                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Folder" />
-                    </Button>
-                </StackPanel>
-                <Expander Header="Files" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="10">
-                    <ListView Height="Auto" MaxHeight="200"
-                          ItemsSource="{Binding FilesInfo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-                        <ListView.Style>
-                            <Style TargetType="{x:Type ListView}">                                
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-                                <Setter Property="ItemContainerStyle">
+        <Style TargetType="{x:Type ListView}" x:Key="ListViewStyle">
+            <Setter Property="Background" Value="#1e1e1e"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Focusable" Value="False"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                    <Grid HorizontalAlignment="Stretch" x:Name="ItemGrid" MouseDown="ItemGrid_MouseDown">
+                                        <Grid.Style>
+                                            <Style TargetType="{x:Type Grid}">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <LinearGradientBrush>
+                                                            <GradientStop Color="#426a8d" Offset="0"/>
+                                                            <GradientStop Color="#2d465c" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Margin" Value="0,0,0,5"/>
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Margin="10" Grid.Row="0" Grid.Column="0" 
+                                        FontWeight="Bold" FontSize="20"
+                                        Text="{Binding Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <WrapPanel Margin="10, 0, 10, 10" Grid.Row="1" Grid.Column="0">
+                                            <CheckBox IsChecked="{Binding IsDownloading, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding Status, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
+                                            <ProgressBar Width="60" Height="5" VerticalAlignment="Center" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="0"/>
+                                            <TextBlock Text="%" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding Done, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <TextBlock Text=" mb / "/>
+                                            <TextBlock Text="{Binding Size, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <TextBlock Text=" mb" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding Peers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <TextBlock Text=" Peers" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding Speed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <TextBlock Text=" KB/s" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding TimeRemaining, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </WrapPanel>
+                                        <StackPanel x:Name="ButtonPanel" Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                                            <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
+                                        x:Name="PlayButton" Click="PlayButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
+                                                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Play" />
+                                            </Button>
+                                            <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
+                                        x:Name="RemoveTorrentButton" Click="RemoveTorrentButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
+                                                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Trash" />
+                                            </Button>
+                                            <Button Style="{StaticResource ButtonStyle}" Tag="{Binding}"
+                                        x:Name="OpenFolderButton" Click="OpenFolderButton_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,10,0">
+                                                <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Folder" />
+                                            </Button>
+                                        </StackPanel>
+                                        <ListView Height="Auto" MaxHeight="200" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" 
+                                      Margin="10,0,10,10" Visibility="Collapsed" x:Name="FilesListView"
+                                      ItemsSource="{Binding FilesInfo, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ListView.Style>
+                                                <Style TargetType="{x:Type ListView}">
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                    <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                                                    <Setter Property="ItemContainerStyle">
+                                                        <Setter.Value>
+                                                            <Style TargetType="{x:Type ListViewItem}">
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                                                            <Border>
+                                                                                <ContentPresenter  />
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Setter Property="Focusable" Value="False"/>
+                                                            </Style>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ListView.Style>
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <DockPanel LastChildFill="False" Margin="0">
+                                                        <Button x:Name="PlayFileButton" Style="{StaticResource ButtonStyle}" Tag="{Binding}"
+                                                        DockPanel.Dock="Left" Width="20" Height="20" Margin="5" Click="PlayFileButton_Click">
+                                                            <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Play" />
+                                                        </Button>
+                                                        <TextBlock Text="{Binding Path=Name}" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                        <!--<Button x:Name="StopDownloadFileButton" DockPanel.Dock="Right" Style="{StaticResource ButtonStyle}"
+                                                                    Width="15" Height="15" Margin="5" Tag="{Binding}" Click="StopDownloadFileButton_Click">
+                                                            <fa:ImageAwesome x:Name="IAIcon" Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Remove" />
+                                                        </Button>-->
+                                                        <TextBlock DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat=" {0} MB {1}%">
+                                                                    <Binding Path="Size" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                                                    <Binding Path="DownloadedPercent" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </DockPanel>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                        <Rectangle Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Width="80" 
+                                       Fill="LightGray" Height="3" x:Name="ShowFilesLine" Margin="0,5,0,5"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="False">
+                                            <Setter TargetName="ButtonPanel" Property="Opacity" Value="0"/>
+                                            <Setter TargetName="ShowFilesLine" Property="Opacity" Value="0"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="ButtonPanel" Property="Opacity" Value="1"/>
+                                            <Setter TargetName="ShowFilesLine" Property="Opacity" Value="1"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <!--<Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                <Setter Property="Template" >
                                     <Setter.Value>
-                                        <Style TargetType="{x:Type ListViewItem}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                                        <Border>
-                                                            <ContentPresenter  />
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <Setter Property="Focusable" Value="False"/>
-                                        </Style>
+                                        
                                     </Setter.Value>
-                                </Setter>                                
-                            </Style>
-                        </ListView.Style>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <DockPanel LastChildFill="False" Margin="0">
-                                    <Button x:Name="PlayFileButton" Style="{StaticResource ButtonStyle}" Tag="{Binding}"
-                                        DockPanel.Dock="Left" Width="20" Height="20" Margin="5" Click="PlayFileButton_Click">
-                                        <fa:ImageAwesome Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Play" />
-                                    </Button>
-                                    <TextBlock Text="{Binding Path=Name}" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                                    <!--<Button x:Name="StopDownloadFileButton" DockPanel.Dock="Right" Style="{StaticResource ButtonStyle}"
-                                        Width="15" Height="15" Margin="5" Tag="{Binding}" Click="StopDownloadFileButton_Click">
-                                        <fa:ImageAwesome x:Name="IAIcon" Foreground="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Foreground}" Icon="Remove" />
-                                    </Button>-->
-                                    <TextBlock DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center">
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat=" {0} MB {1}%">
-                                                <Binding Path="Size" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
-                                                <Binding Path="DownloadedPercent" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
-                                </DockPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Expander>
-                
-            </Grid>
-        </DataTemplate>        
+                                </Setter>
+                            </Trigger>-->
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource IsLastItemInContainerConverter}}" Value="True">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                            <Grid>
+                                                <Rectangle StrokeDashArray="4 3" HorizontalAlignment="Stretch" Height="100"
+                                                       Fill="Transparent" Stroke="LightGray" StrokeThickness="4"
+                                                       Margin="10">
+                                                </Rectangle>
+                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" 
+                                                           Foreground="LightGray" Text="Drop a torrent file here or paste a magnet link"/>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        
+
     </Page.Resources>
     
     <Grid>
@@ -174,9 +224,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ListView x:Name="TorrentListView" Margin="0" Grid.Row="1"
-                  ItemTemplate="{StaticResource TorrentListItemTemplate}"
-                  Style="{StaticResource ListViewStyle}" Drop="TorrentListView_Drop" AllowDrop="True">
+        <ListView x:Name="TorrentListView" Margin="0" Grid.Row="1" AlternationCount="1000"
+                  Style="{StaticResource ListViewStyle}"
+                  Drop="TorrentListView_Drop" 
+                  AllowDrop="True">
         </ListView>
     </Grid>
 </Page>

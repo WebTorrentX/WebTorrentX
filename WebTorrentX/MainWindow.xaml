@@ -124,9 +124,33 @@
                 <MenuItem x:Name="OpenButton" InputGestureText="Ctrl+O" Header="Open Torrent File..." Click="OpenButton_Click"/>
                 <MenuItem x:Name="OpenAddressButton" InputGestureText="Ctrl+U" Header="Open Torrent Address..." Click="OpenAddressButton_Click"/>
                 <Separator Margin="0,5,0,5"/>
-                <MenuItem Header="Preferences" x:Name="PreferencesButton" Click="PreferencesButton_Click"/>
-                <Separator Margin="0,5,0,5"/>
                 <MenuItem x:Name="CloseButton" InputGestureText="Ctrl+W" Header="Close" Click="CloseButton_Click"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem x:Name="UndoButton" InputGestureText="Ctrl+Z" 
+                          Header="Undo" Click="UndoButton_Click"
+                          IsEnabled="{Binding IsAddTorrentLinkPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <MenuItem x:Name="RedoButton" InputGestureText="Ctrl+Y" 
+                          Header="Redo" Click="RedoButton_Click"
+                          IsEnabled="{Binding IsAddTorrentLinkPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Separator Margin="0,5,0,5"/>
+                <MenuItem x:Name="CutButton" InputGestureText="Ctrl+X" 
+                          Header="Cut" Click="CutButton_Click"
+                          IsEnabled="{Binding IsAddTorrentLinkPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <MenuItem x:Name="CopyButton" InputGestureText="Ctrl+C" 
+                          Header="Copy" Click="CopyButton_Click"
+                          IsEnabled="{Binding IsAddTorrentLinkPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <MenuItem x:Name="PasteButton" InputGestureText="Ctrl+V" 
+                          Header="Paste" Click="PasteButton_Click"
+                          IsEnabled="{Binding IsAddTorrentLinkPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <MenuItem x:Name="DeleteButton" InputGestureText="Del" 
+                          Header="Delete" Click="DeleteButton_Click"
+                          IsEnabled="{Binding IsAddTorrentLinkPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <MenuItem x:Name="SelectAllButton" InputGestureText="Ctrl+A" 
+                          Header="Select All" Click="SelectAllButton_Click"
+                          IsEnabled="{Binding IsAddTorrentLinkPage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Separator Margin="0,5,0,5"/>
+                <MenuItem Header="Preferences" x:Name="PreferencesButton" Click="PreferencesButton_Click"/>
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem x:Name="FullScreenButton" Header="Full Screen" 

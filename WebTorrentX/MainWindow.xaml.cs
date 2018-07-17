@@ -34,6 +34,14 @@ namespace WebTorrentX
             }
         }
 
+        public bool IsAddTorrentLinkPage
+        {
+            get
+            {
+                return MainFrame.Content is AddTorrentLinkPage;
+            }
+        }
+
         public bool CanGoBack
         {
             get
@@ -85,14 +93,63 @@ namespace WebTorrentX
         {
             if (MainFrame.Content is DownloadPage)
             {
-                InputDialog dialog = new InputDialog();
-                dialog.Owner = this;
-                dialog.Message = "Enter torrent address or magnet link";
-                if (dialog.ShowDialog() == true)
-                {
-                    App.downloadController.LoadMagnet(dialog.Value);
-                }
+                (MainFrame.Content as DownloadPage).NavigationService.Navigate(new AddTorrentLinkPage());
+            }
+        }
 
+        private void Undo()
+        {
+            if (MainFrame.Content is AddTorrentLinkPage)
+            {
+                (MainFrame.Content as AddTorrentLinkPage).Undo();
+            }
+        }
+
+        private void Redo()
+        {
+            if (MainFrame.Content is AddTorrentLinkPage)
+            {
+                (MainFrame.Content as AddTorrentLinkPage).Redo();
+            }
+        }
+
+        private void Cut()
+        {
+            if (MainFrame.Content is AddTorrentLinkPage)
+            {
+                (MainFrame.Content as AddTorrentLinkPage).Cut();
+            }
+        }
+
+        private void Copy()
+        {
+            if (MainFrame.Content is AddTorrentLinkPage)
+            {
+                (MainFrame.Content as AddTorrentLinkPage).Copy();
+            }
+        }
+
+        private void Paste()
+        {
+            if (MainFrame.Content is AddTorrentLinkPage)
+            {
+                (MainFrame.Content as AddTorrentLinkPage).Paste();
+            }
+        }
+
+        private void Delete()
+        {
+            if (MainFrame.Content is AddTorrentLinkPage)
+            {
+                (MainFrame.Content as AddTorrentLinkPage).Delete();
+            }
+        }
+
+        private void SelectAll()
+        {
+            if (MainFrame.Content is AddTorrentLinkPage)
+            {
+                (MainFrame.Content as AddTorrentLinkPage).SelectAll();
             }
         }
 
@@ -176,6 +233,24 @@ namespace WebTorrentX
                     case Key.W:
                         Close();
                         break;
+                    case Key.Z:
+                        Undo();
+                        break;
+                    case Key.Y:
+                        Redo();
+                        break;
+                    case Key.X:
+                        Cut();
+                        break;
+                    case Key.C:
+                        Copy();
+                        break;
+                    case Key.V:
+                        Paste();
+                        break;
+                    case Key.A:
+                        SelectAll();
+                        break;
                     case Key.Up:
                         IncreaseVolume();
                         break;
@@ -207,6 +282,9 @@ namespace WebTorrentX
                     break;
                 case Key.Space:
                     PlayPause();
+                    break;
+                case Key.Delete:
+                    Delete();
                     break;
                 default: break;
             }
@@ -290,6 +368,7 @@ namespace WebTorrentX
         {
             OnPropertyChanged(nameof(IsDownloadPage));
             OnPropertyChanged(nameof(IsPlayerPage));
+            OnPropertyChanged(nameof(IsAddTorrentLinkPage));
             OnPropertyChanged(nameof(CanGoBack));
         }
 
@@ -308,6 +387,41 @@ namespace WebTorrentX
             AboutWindow about = new AboutWindow();
             about.Owner = this;
             about.ShowDialog();
+        }
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+            Undo();
+        }
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e)
+        {
+            Redo();
+        }
+
+        private void CutButton_Click(object sender, RoutedEventArgs e)
+        {
+            Cut();
+        }
+
+        private void CopyButton_Click(object sender, RoutedEventArgs e)
+        {
+            Copy();
+        }
+
+        private void PasteButton_Click(object sender, RoutedEventArgs e)
+        {
+            Paste();
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            Delete();
+        }
+
+        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            SelectAll();
         }
     }
 }

@@ -7,7 +7,7 @@ We have used latest technology to build this torrent client from scratch and it 
 
 # How to install?
 
-Download the beta version here: https://drive.google.com/open?id=1KVU4DicwywYbmIpvw-ATAWs6KDqM9J5y
+Download the beta version here: https://download.cnet.com/WebTorrentX/3000-2196_4-77972313.html
 
 # Want to join the team? 
 Just email us, we will review your application and get back to you if you are selected

@@ -18,4 +18,3 @@ If you have any question,please email us : webtorrentx.team@gmail.com
 # Who we are?
 A team  who wants to make the world a better place.
 
-Made with <img src="https://imgify.us/images/2018/06/06/Love.png" alt="drawing" height="20px"/> in  Russia <img src="https://imgify.us/images/2018/06/06/22a70440b45e15fcd5013fb87413a24a.jpg" alt="drawing" height="20px"/>

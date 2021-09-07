@@ -1,8 +1,8 @@
-Finally an Open Source Torrent Streaming Client has achieved Native Performance
+Legal note: We do not encourage illegal pirated movie download with WebtorrentX, we only encourage free internet movie download with our torrent client.
 
-This torrent streaming client will not kill your RAM like other torrent streaming clients. 
+Team Goal and Vision: making webtorrentX the best torrent streaming client for users around the world. Billions of  Windows users will use this torrent client one day, so we need to be very careful while working with this software. You will build this product so high performance so that you choose WebTorrentX over any other torrent client for your own use.
 
-We have used latest technology to build this torrent client from scratch and it is not only free but it is also open source. There is no possible hidden tracker like in closed source products and no ads for sure. 
+Finally an Open Source Torrent Streaming Client has achieved Native Performance. This torrent streaming client will not kill your RAM like other torrent streaming clients. We have used latest technology to build this torrent client from scratch and it is not only free but it is also open source. There is no possible hidden tracker like in closed source products and no ads for sure. 
 
 
 # How to install?

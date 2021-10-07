@@ -1,93 +1,64 @@
-﻿using Ragnar;
+﻿using MonoTorrent.Client;
+using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace WebTorrentX.Models
 {
     internal sealed class TorrentFileInfo : INotifyPropertyChanged
     {
-
         public event PropertyChangedEventHandler PropertyChanged;
+
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private int fileindex;
-        private TorrentHandle handle; 
+        private TorrentManager manager;
 
-        public string Name
-        {
-            get
-            {
-                string path = Path.Combine(handle.QueryStatus().SavePath, handle.TorrentFile.FileAt(fileindex).Path);
-                return Path.GetFileName(path);
-            }
-        }
+        public string Name => Path.GetFileName(FilePath);
 
-        public string FilePath
-        {
-            get
-            {
-                return Path.Combine(handle.QueryStatus().SavePath, handle.TorrentFile.FileAt(fileindex).Path);
-            }
-        }
+        public string FilePath => Path.Combine(manager.SavePath, manager.Torrent.Name, manager.Torrent.Files.ElementAt(fileindex).Path);
 
         public double DownloadedPercent
         {
             get
-            {                
-                FileInfo info = new FileInfo(Path.Combine(handle.QueryStatus().SavePath, handle.TorrentFile.FileAt(fileindex).Path));
+            {
+                var info = new FileInfo(FilePath);
+                if (info.Exists)
+                {
+                    return Math.Round(DownloadedSize * 100 / manager.Torrent.Files.ElementAt(fileindex).Length, 2);
+                }
+                else return 0;
+            }
+        }
+
+        public double Size => manager.Torrent.Files.ElementAt(fileindex).Length / (1024 * 1024);
+
+        public double DownloadedSize
+        {
+            get
+            {
+                var info = new FileInfo(FilePath);
                 if (info.Exists)
                 {
                     long length = GetFileSizeOnDisk(info.FullName);
                     length = length >= info.Length ? info.Length : length;
-                    return length * 100 / handle.TorrentFile.FileAt(fileindex).Size;
-                }                    
+                    return length;
+                }
                 else return 0;
             }
-
         }
 
-        public double Size
-        {
-            get
-            {
-                return handle.TorrentFile.FileAt(fileindex).Size / (1024 * 1024);
-            }
-        }
+        public int Index => fileindex;
 
-        public int Priority
-        {
-            get
-            {
-                return handle.GetFilePriority(fileindex);
-            }
-        }
-
-        public int Index
-        {
-            get
-            {
-                return fileindex;
-            }
-        }
-
-        public TorrentFileInfo(TorrentHandle handle, int fileindex)
+        public TorrentFileInfo(TorrentManager manager, int fileindex)
         {
             this.fileindex = fileindex;
-            this.handle = handle;
-        }
-
-        public void StopDownload()
-        {
-            handle.SetFilePriority(fileindex, 0);
-        }
-
-        public void ContinueDownload()
-        {
-            handle.SetFilePriority(fileindex, 1);
+            this.manager = manager;
         }
 
         private long GetFileSizeOnDisk(string file)
@@ -101,7 +72,7 @@ namespace WebTorrentX.Models
             uint losize = GetCompressedFileSizeW(file, out hosize);
             long size;
             size = (long)hosize << 32 | losize;
-            return ((size + clusterSize - 1) / clusterSize) * clusterSize;
+            return (size + clusterSize - 1) / clusterSize * clusterSize;
         }
 
         [DllImport("kernel32.dll")]
@@ -112,6 +83,5 @@ namespace WebTorrentX.Models
         static extern int GetDiskFreeSpaceW([In, MarshalAs(UnmanagedType.LPWStr)] string lpRootPathName,
            out uint lpSectorsPerCluster, out uint lpBytesPerSector, out uint lpNumberOfFreeClusters,
            out uint lpTotalNumberOfClusters);
-
     }
 }

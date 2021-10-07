@@ -117,9 +117,9 @@ namespace WebTorrentX.ViewModels
             if ((sender as Button).Tag is Torrent)
             {
                 var torrent = (sender as Button).Tag as Torrent;
-                if (Directory.Exists(torrent.DownloadPath))
+                if (Directory.Exists(torrent.DownloadFolder))
                 {
-                    Process.Start("explorer.exe", torrent.DownloadPath);
+                    Process.Start("explorer.exe", torrent.DownloadFolder);
                 }
             }
         }
@@ -130,16 +130,6 @@ namespace WebTorrentX.ViewModels
             {
                 var button = sender as Button;
                 var tfinfo = button.Tag as TorrentFileInfo;
-                if (tfinfo.Priority == 1)
-                {
-                    tfinfo.StopDownload();
-                    (button.FindName("IAIcon") as ImageAwesome).Icon = FontAwesomeIcon.Play;
-                }
-                else
-                {
-                    tfinfo.ContinueDownload();
-                    (button.FindName("IAIcon") as ImageAwesome).Icon = FontAwesomeIcon.Remove;
-                }
                 
             }
         }

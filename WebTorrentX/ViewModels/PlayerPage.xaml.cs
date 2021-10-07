@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Threading;
-using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using WebTorrentX.Models;
 
 namespace WebTorrentX.ViewModels
@@ -71,8 +71,8 @@ namespace WebTorrentX.ViewModels
                         {
                             var shell = ShellObject.FromParsingName(tfinfo.FilePath);
                             IShellProperty prop = shell.Properties.System.Media.Duration;
-                            var t = (ulong)prop.ValueAsObject;
-                            return TimeSpan.FromTicks((long)t);
+                            var t = prop.ValueAsObject;
+                            return t is null ? TimeSpan.Zero : TimeSpan.FromTicks((long)t);
                         }
                         catch
                         {
@@ -80,7 +80,7 @@ namespace WebTorrentX.ViewModels
                         }
                     }
                 }
-                else return TimeSpan.Zero;                
+                else return TimeSpan.Zero;
             }
         }
 
@@ -148,13 +148,13 @@ namespace WebTorrentX.ViewModels
             }
         }
 
-        
+
 
         public PlayerPage()
         {
             InitializeComponent();
             DataContext = this;
-            Player.VlcMediaPlayer.MediaChanged += (object sender, Meta.Vlc.MediaPlayerMediaChangedEventArgs e) => 
+            Player.VlcMediaPlayer.MediaChanged += (object sender, Meta.Vlc.MediaPlayerMediaChangedEventArgs e) =>
             {
                 OnPropertyChanged(nameof(Maximum));
             };
@@ -177,7 +177,7 @@ namespace WebTorrentX.ViewModels
                     GoBack();
                 }
                 Thread t = new Thread(() =>
-                {                    
+                {
                     while (Player.VlcMediaPlayer.State != Meta.Vlc.Interop.Media.MediaState.Stopped)
                     {
                         ThreadTask();
@@ -186,11 +186,11 @@ namespace WebTorrentX.ViewModels
                 });
                 t.Start();
             }
-            
+
         }
 
         private void ThreadTask()
-        {            
+        {
             if (countToHide < 10 && IsFullscreen)
                 countToHide++;
             if (Length > TimeSpan.Zero)
@@ -217,7 +217,7 @@ namespace WebTorrentX.ViewModels
             {
                 Dispatcher.Invoke(delegate
                 {
-                    
+
                     if (first)
                     {
                         IsBuffering = false;
@@ -226,7 +226,7 @@ namespace WebTorrentX.ViewModels
                     }
                 });
             }
-            Dispatcher.Invoke(delegate 
+            Dispatcher.Invoke(delegate
             {
                 OnPropertyChanged(nameof(HideControls));
                 OnPropertyChanged(nameof(Buffering));
@@ -234,7 +234,7 @@ namespace WebTorrentX.ViewModels
                 OnPropertyChanged(nameof(Maximum));
                 OnPropertyChanged(nameof(Progress));
                 OnPropertyChanged(nameof(Time));
-            });            
+            });
         }
 
         private void Player_StateChanged(object sender, Meta.Vlc.ObjectEventArgs<Meta.Vlc.Interop.Media.MediaState> e)
@@ -252,12 +252,12 @@ namespace WebTorrentX.ViewModels
                     MessageBox.Show(message, "WebTorrentX", MessageBoxButton.OK);
                     GoBack();
                     break;
-                case Meta.Vlc.Interop.Media.MediaState.Ended:                    
+                case Meta.Vlc.Interop.Media.MediaState.Ended:
                     break;
                 default: break;
             }
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName)
         {
@@ -287,7 +287,7 @@ namespace WebTorrentX.ViewModels
                 double value = time * 100 / Length.TotalSeconds;
                 if (Buffering - value > 1)
                 {
-                    Player.Time = new TimeSpan(0, 0, (int)time); 
+                    Player.Time = new TimeSpan(0, 0, (int)time);
                 }
             }
         }
@@ -321,7 +321,7 @@ namespace WebTorrentX.ViewModels
             else
             {
                 Volume = volumeBackup;
-                volumeBackup = 0;                
+                volumeBackup = 0;
             }
         }
 
@@ -332,7 +332,7 @@ namespace WebTorrentX.ViewModels
                 Player.Stop();
                 if (IsFullscreen) Fullscreen();
                 NavigationService.GoBack();
-            }                
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -382,7 +382,7 @@ namespace WebTorrentX.ViewModels
                 {
                     Play();
                 }
-            }            
+            }
         }
 
         private void Play()
@@ -409,12 +409,12 @@ namespace WebTorrentX.ViewModels
 
         public void IncreaseSpeed()
         {
-            Player.Rate ++;
+            Player.Rate++;
         }
 
         public void DecreaseSpeed()
         {
-            Player.Rate --;
+            Player.Rate--;
         }
 
         public void LoadSubtitles(string path)
@@ -428,9 +428,9 @@ namespace WebTorrentX.ViewModels
             {
                 if (countToHide > 0 && countToHide < 10)
                     countToHide = 10;
-                else if (countToHide == 10 )
+                else if (countToHide == 10)
                     countToHide = 0;
-            }            
+            }
         }
 
     }

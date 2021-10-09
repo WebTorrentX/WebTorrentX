@@ -67,19 +67,17 @@ namespace WebTorrentX.Models
             get
             {
                 if (manager != null && !IsEmpty)
-                    return manager.Torrent.HttpSeeds.Count;
+                    return manager.OpenConnections;
                 else return 0;
             }
         }
-
-        MonoTorrent.SpeedMonitor speedMonitor = new MonoTorrent.SpeedMonitor();
 
         public double Speed
         {
             get
             {
                 if (manager != null && !IsEmpty)
-                    return Math.Round(speedMonitor.Rate / 1024f, 2);
+                    return Math.Round(manager.Monitor.DownloadSpeed / 1024f, 2);
                 else
                     return 0;
             }

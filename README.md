@@ -7,7 +7,7 @@ Finally an Open Source Torrent Streaming Client has achieved Native Performance.
 
 # How to install?
 
-Download the beta version here: https://download.cnet.com/WebTorrentX/3000-2196_4-77972313.html
+Download the beta version here: https://github.com/WebTorrentX/WebTorrentX/blob/master/setup/setup.exe
 
 # Want to join the team? 
 Just email us, we will review your application and get back to you if you are selected
